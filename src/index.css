@@ -1,3 +1,4 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css');
 @import 'tailwindcss';
 
 @layer base {
@@ -11,7 +12,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 213 94% 68%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -28,7 +29,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 213 94% 68%;
 
     --radius: 0.5rem;
   }
@@ -43,7 +44,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 213 94% 68%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -68,7 +69,287 @@
 * {
   border-color: #e5e7eb;
 }
+
 body {
-  background-color: white;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #f8f9fa;
   color: #111827;
+  padding-top: 20px;
 }
+
+/* Header styles */
+.app-header {
+  margin-bottom: 30px;
+}
+
+.app-header h1 {
+  color: #0d6efd;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.app-header .lead {
+  color: #6c757d;
+  font-size: 1.125rem;
+  margin-bottom: 0;
+}
+
+/* Navigation tabs */
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.nav-tab {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-bottom: none;
+  color: #495057;
+  padding: 0.75rem 1.5rem;
+  margin-right: 0.25rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-tab:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.nav-tab.active {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+  font-weight: bold;
+}
+
+
+
+/* Onglet Admin aligné à droite */
+.nav-tab.admin-tab {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* Cards */
+.card {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background-color: #0d6efd;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  border-bottom: 1px solid #dee2e6;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Article cards */
+.article-card {
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.article-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.375rem;
+}
+
+.badge-primary {
+  background-color: #0d6efd;
+}
+
+.badge-success {
+  background-color: #198754;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+}
+
+/* Buttons améliorés */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.btn-success:hover {
+  background-color: #157347;
+  border-color: #146c43;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #dee2e6;
+  color: #495057;
+}
+
+.btn-outline:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.btn-unavailable {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  cursor: not-allowed;
+}
+
+.btn-added {
+  background-color: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+  border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+/* Input améliorés */
+.form-control {
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Search bar */
+.search-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+/* Loading states */
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 0.25rem solid #f3f3f3;
+  border-top: 0.25rem solid #0d6efd;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.bounce-in {
+  animation: bounceIn 0.3s ease-out;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Footer */
+/* .footer {
+  margin-top: 3rem;
+  padding: 1.5rem 0;
+  background-color: #343a40;
+  color: white;
+  text-align: center;
+  border-radius: 0.5rem 0.5rem 0 0;
+} */
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .nav-tab {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .article-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Styles pour les types d'articles */
+.type-livre { border-left: 4px solid #3498db; }
+.type-carte { border-left: 4px solid #1abc9c; }
+.type-casque { border-left: 4px solid #e74c3c; }
+.type-corde { border-left: 4px solid #f39c12; }
+.type-baudrier { border-left: 4px solid #9b59b6; }
