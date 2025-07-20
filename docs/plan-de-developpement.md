@@ -298,8 +298,11 @@ ADD COLUMN custom_borrow_fields jsonb DEFAULT '{}';
 ### Étape 7 : Améliorer la recherche d'articles au catalogue
 1. ajouter des filtres de recherche suivant les champs (la base de données s'étoffera dans le futur et de nouveaux champs seront ajoutés)
 
-### Étape 8 : Améliorer l'aspect de la GUI avec du CSS un peu plus beau
-kilocode pourra me demander de lui fournir un exemple.
+### Étape 8 : Améliorer l'aspect de la GUI avec du CSS un peu plus beau. A FINIR
+1. ✅ Bases posées
+2. améliorer l'utilisation de tailwindcss et voir si on peut diminuer la taille du css grâce à ça.
+3. quelques bugs au niveau des cartes d'articles
+4. voir pour changer les pop-up navigateur par des toasts ?
 
 ### Étape 9 : Installation Automatisée
 Un script d'installation automatisé sera développé pour faciliter le déploiement par d'autres clubs :

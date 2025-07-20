@@ -1,4 +1,4 @@
-# Déploiement AWS Amplify - CAF CRM
+# Déploiement AWS Amplify - Miniloc
 
 ## Configuration actuelle
 

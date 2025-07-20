@@ -2,7 +2,7 @@
 
 ## 🚀 Configuration terminée
 
-L'application CAF CRM est maintenant prête pour le déploiement sur AWS Amplify avec conservation de la base Supabase.
+L'application Miniloc est maintenant prête pour le déploiement sur AWS Amplify avec conservation de la base Supabase.
 
 ## ✅ Fichiers configurés
 
