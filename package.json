@@ -1,5 +1,5 @@
 {
-  "name": "Miniloc",
+  "name": "miniloc",
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
@@ -15,7 +15,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Application de gestion de prêt de matériel et bibliothèque pour les clubs alpins",
   "dependencies": {
     "@supabase/supabase-js": "^2.50.0",
     "clsx": "^2.1.1",

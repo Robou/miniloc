@@ -158,7 +158,7 @@ Il faudra créer ou mettre à jour les scripts de création des tables de la bas
 - Mots-clés (text)
 - ISBN (text)
 - Type (select: livre, carte topographique)
-- Lieu de stockage (text)
+- Lieu de stockage (select: options à définir)
 
 ##### Preset "Matériel de montagne"
 **Champs articles :**
