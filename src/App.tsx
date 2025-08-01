@@ -8,34 +8,125 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY!
 );
 
+// Type pour les livres
+type Book = {
+  id: number;
+  title: string;
+  author?: string;
+  category?: string;
+  publisher?: string;
+  publication_year?: number;
+  description?: string;
+  keywords?: string;
+  isbn?: string;
+  type?: string;
+  storage_location?: string;
+  available: boolean;
+  created_at: string;
+};
+
+// Type pour les articles (matériel de montagne)
 type Article = {
   id: number;
-  name: string;
-  type: string;
+  // Champs existants
+  name?: string; // Garde pour compatibilité, mais sera remplacé par designation
+  type?: string;
   available: boolean;
+  created_at?: string;
+  // Nouveaux champs pour le matériel de montagne
+  designation?: string;
+  is_epi?: boolean;
+  color?: string;
+  manufacturer?: string;
+  model?: string;
+  size?: string;
+  manufacturer_id?: string;
+  club_id?: string;
+  manufacturing_date?: string;
+  operational_status?: string;
+  usage_notes?: string;
+};
+
+type BookBorrow = {
+  id: number;
+  book_id: number;
+  name: string;
+  email?: string;
+  borrowed_at: string;
+  book: Book;
 };
 
 type Borrow = {
   id: number;
   article_id: number;
   name: string;
-  email: string;
+  email?: string;
   borrowed_at: string;
+  // Nouveaux champs pour les emprunts de matériel
+  rental_price?: number;
+  supervisor_name?: string;
   article: Article;
 };
 
+// Configuration des modes
+type AppMode = 'articles' | 'books';
+
+type ModeConfig = {
+  name: string;
+  icon: string;
+  tableName: string;
+  borrowTableName: string;
+  itemIdField: string;
+  displayField: string;
+  createFunction: string;
+  returnFunction: string;
+};
+
+const MODE_CONFIGS: Record<AppMode, ModeConfig> = {
+  articles: {
+    name: 'Matériel de montagne',
+    icon: 'fas fa-mountain',
+    tableName: 'equipment', // Utilise la nouvelle table equipment
+    borrowTableName: 'equipment_borrows',
+    itemIdField: 'equipment_id',
+    displayField: 'designation',
+    createFunction: 'create_equipment_borrow',
+    returnFunction: 'return_equipment',
+  },
+  books: {
+    name: 'Bibliothèque',
+    icon: 'fas fa-book',
+    tableName: 'books',
+    borrowTableName: 'book_borrows',
+    itemIdField: 'book_id',
+    displayField: 'title',
+    createFunction: 'create_book_borrow',
+    returnFunction: 'return_book',
+  },
+};
+
 export default function App() {
+  const [currentMode, setCurrentMode] = useState<AppMode>('articles');
   const [articles, setArticles] = useState<Article[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [search, setSearch] = useState('');
-  const [cart, setCart] = useState<Article[]>([]);
+  const [cart, setCart] = useState<Article[] | Book[]>([]);
   const [step, setStep] = useState<'catalogue' | 'cart' | 'borrow' | 'login' | 'admin' | 'borrows'>(
     'catalogue'
   );
-  const [borrower, setBorrower] = useState({ name: '', email: '' });
+  const [borrower, setBorrower] = useState({
+    name: '',
+    email: '',
+    rental_price: '',
+    supervisor_name: '',
+  });
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [session, setSession] = useState<Session | null>(null);
-  const [borrows, setBorrows] = useState<Borrow[]>([]);
+  const [borrows, setBorrows] = useState<Borrow[] | BookBorrow[]>([]);
+
+  const currentConfig = MODE_CONFIGS[currentMode];
+  const currentItems = currentMode === 'articles' ? articles : books;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,28 +134,35 @@ export default function App() {
     });
     fetchArticles();
     fetchBorrows();
-  }, []);
+  });
 
   async function fetchArticles() {
-    const { data, error } = await supabase.from('articles').select('*');
-    if (!error && data) setArticles(data);
+    const { data, error } = await supabase.from(currentConfig.tableName).select('*');
+    if (!error && data) {
+      if (currentMode === 'articles') {
+        setArticles(data);
+      } else {
+        setBooks(data);
+      }
+    }
   }
 
   async function fetchBorrows() {
-    const { data, error } = await supabase.from('borrows').select(`
+    const itemTable = currentMode === 'articles' ? 'equipment' : 'books';
+    const { data, error } = await supabase.from(currentConfig.borrowTableName).select(`
         *,
-        article:articles(*)
+        ${currentMode === 'articles' ? 'equipment' : 'book'}:${itemTable}(*)
       `);
     if (!error && data) setBorrows(data);
   }
 
-  function addToCart(article: Article) {
-    if (!cart.find((a) => a.id === article.id)) {
-      setCart([...cart, article]);
+  function addToCart(item: Article | Book) {
+    if (!cart.find((a) => a.id === item.id)) {
+      setCart([...cart, item]);
 
       // Déclencher l'animation directement sur l'élément
       setTimeout(() => {
-        const element = document.getElementById(`article-${article.id}`);
+        const element = document.getElementById(`item-${item.id}`);
         if (element) {
           element.classList.add('bounce-in');
           setTimeout(() => {
@@ -79,27 +177,44 @@ export default function App() {
     setCart([]);
   }
 
-  function removeFromCart(articleId: number) {
-    setCart(cart.filter((a) => a.id !== articleId));
+  function removeFromCart(itemId: number) {
+    setCart(cart.filter((a) => a.id !== itemId));
   }
 
   async function confirmBorrow() {
     const errors: string[] = [];
 
-    for (const article of cart) {
-      const { data, error } = await supabase.rpc('create_borrow', {
-        p_article_id: article.id,
+    for (const item of cart) {
+      const params: Record<string, string | number | null> = {
+        [`p_${currentConfig.itemIdField.replace('_id', '')}_id`]: item.id,
         p_name: borrower.name,
-        p_email: borrower.email || null, // Email facultatif
-      });
+        p_email: borrower.email || null,
+      };
+
+      // Ajouter les champs spécifiques au matériel de montagne
+      if (currentMode === 'articles') {
+        if (borrower.rental_price) {
+          params.p_rental_price = parseFloat(borrower.rental_price);
+        }
+        if (borrower.supervisor_name) {
+          params.p_supervisor_name = borrower.supervisor_name;
+        }
+      }
+
+      const { data, error } = await supabase.rpc(currentConfig.createFunction, params);
+
+      const itemName =
+        currentMode === 'articles'
+          ? (item as Article).designation || (item as Article).name || 'Article'
+          : (item as Book).title;
 
       if (error) {
-        errors.push(`Erreur technique pour ${article.name}: ${error.message}`);
+        errors.push(`Erreur technique pour ${itemName}: ${error.message}`);
         continue;
       }
 
       if (!data.success) {
-        errors.push(`${article.name}: ${data.error}`);
+        errors.push(`${itemName}: ${data.error}`);
         continue;
       }
     }
@@ -108,11 +223,9 @@ export default function App() {
       alert(
         `Erreurs lors de l'emprunt:\n${errors.join('\n')}\n\nVeuillez corriger les informations et réessayer.`
       );
-      // Rester sur l'écran de saisie pour permettre de corriger
       return;
     }
 
-    // Tout s'est bien passé
     alert('Emprunt réalisé avec succès !');
     setCart([]);
     setStep('catalogue');
@@ -120,12 +233,13 @@ export default function App() {
     fetchBorrows();
   }
 
-  async function returnArticle(borrowId: number) {
-    if (!confirm('Êtes-vous sûr de vouloir retourner cet article ?')) {
+  async function returnItem(borrowId: number) {
+    const itemType = currentMode === 'articles' ? 'article' : 'livre';
+    if (!confirm(`Êtes-vous sûr de vouloir retourner cet ${itemType} ?`)) {
       return;
     }
 
-    const { data, error } = await supabase.rpc('return_article', {
+    const { data, error } = await supabase.rpc(currentConfig.returnFunction, {
       p_borrow_id: borrowId,
     });
 
@@ -139,7 +253,7 @@ export default function App() {
       return;
     }
 
-    alert('Article retourné avec succès !');
+    alert(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} retourné avec succès !`);
     fetchArticles();
     fetchBorrows();
   }
@@ -163,8 +277,8 @@ export default function App() {
     }
   }
 
-  async function addArticle(name: string, type: string) {
-    const { error } = await supabase.from('articles').insert({ name, type });
+  async function addItem(itemData: Partial<Article | Book>) {
+    const { error } = await supabase.from(currentConfig.tableName).insert(itemData);
     if (!error) fetchArticles();
   }
 
@@ -174,12 +288,33 @@ export default function App() {
         {/* Header */}
         <div className="app-header text-center">
           <h1 className="text-4xl font-bold mb-2">
-            <i className="fas fa-mountain mr-3"></i>
-            CAF Avignon - Prêt de Matériel
+            <i className={`${currentConfig.icon} mr-3`}></i>
+            CAF Avignon - {currentConfig.name}
           </h1>
           <p className="lead text-lg text-gray-600">
-            Consultez et empruntez le matériel de montagne du club
+            Consultez et empruntez{' '}
+            {currentMode === 'articles' ? 'le matériel de montagne' : 'les livres'} du club
           </p>
+        </div>
+
+        {/* Mode Selector */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-white rounded-lg shadow-sm border p-1 flex">
+            {Object.entries(MODE_CONFIGS).map(([mode, config]) => (
+              <button
+                key={mode}
+                onClick={() => setCurrentMode(mode as AppMode)}
+                className={`px-4 py-2 rounded-md transition-colors ${
+                  currentMode === mode
+                    ? 'bg-blue-500 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <i className={`${config.icon} mr-2`}></i>
+                {config.name}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Navigation Tabs */}
@@ -240,25 +375,38 @@ export default function App() {
               </div>
             </div>
 
-            {/* Articles Grid */}
+            {/* Items Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {articles
-                .filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
-                .map((article) => {
-                  const isInCart = !!cart.find((a) => a.id === article.id);
-                  const typeClass = `type-${article.type?.toLowerCase().replace(/\s+/g, '-') || 'default'}`;
+              {currentItems
+                .filter((item) => {
+                  const searchField =
+                    currentMode === 'articles'
+                      ? (item as Article).designation || (item as Article).name || ''
+                      : (item as Book).title || '';
+                  return searchField.toLowerCase().includes(search.toLowerCase());
+                })
+                .map((item) => {
+                  const isInCart = !!cart.find((a) => a.id === item.id);
+                  const itemType =
+                    currentMode === 'articles' ? (item as Article).type : (item as Book).category;
+                  const typeClass = `type-${itemType?.toLowerCase().replace(/\s+/g, '-') || 'default'}`;
+
+                  const displayName =
+                    currentMode === 'articles'
+                      ? (item as Article).designation || (item as Article).name || 'Article'
+                      : (item as Book).title;
 
                   return (
                     <div
-                      key={article.id}
-                      id={`article-${article.id}`}
+                      key={item.id}
+                      id={`item-${item.id}`}
                       className={`card article-card ${typeClass} fade-in`}
                     >
                       <div className="card-body">
                         <div className="flex justify-between items-start mb-3">
-                          <h3 className="font-bold text-lg text-gray-800 flex-1">{article.name}</h3>
+                          <h3 className="font-bold text-lg text-gray-800 flex-1">{displayName}</h3>
                           <div className="ml-2">
-                            {article.available ? (
+                            {item.available ? (
                               <span className="badge badge-success">
                                 <i className="fas fa-check mr-1"></i>
                                 Disponible
@@ -275,15 +423,15 @@ export default function App() {
                         <div className="mb-4">
                           <span className="badge badge-secondary">
                             <i className="fas fa-tag mr-1"></i>
-                            {article.type || 'Non spécifié'}
+                            {itemType || 'Non spécifié'}
                           </span>
                         </div>
 
                         <Button
-                          onClick={() => addToCart(article)}
-                          disabled={!article.available || isInCart}
+                          onClick={() => addToCart(item)}
+                          disabled={!item.available || isInCart}
                           className={`w-full ${
-                            !article.available
+                            !item.available
                               ? 'btn-unavailable'
                               : isInCart
                                 ? 'btn-added'
@@ -292,10 +440,10 @@ export default function App() {
                         >
                           <i
                             className={`fas ${
-                              !article.available ? 'fa-ban' : isInCart ? 'fa-check' : 'fa-plus'
+                              !item.available ? 'fa-ban' : isInCart ? 'fa-check' : 'fa-plus'
                             } mr-2`}
                           ></i>
-                          {!article.available
+                          {!item.available
                             ? 'Indisponible'
                             : isInCart
                               ? 'Ajouté au panier'
@@ -307,11 +455,18 @@ export default function App() {
                 })}
             </div>
 
-            {articles.filter((a) => a.name.toLowerCase().includes(search.toLowerCase())).length ===
-              0 && (
+            {currentItems.filter((item) => {
+              const searchField =
+                currentMode === 'articles'
+                  ? (item as Article).designation || (item as Article).name || ''
+                  : (item as Book).title || '';
+              return searchField.toLowerCase().includes(search.toLowerCase());
+            }).length === 0 && (
               <div className="text-center py-12">
                 <i className="fas fa-search text-6xl text-gray-300 mb-4"></i>
-                <p className="text-gray-500 text-lg">Aucun article trouvé</p>
+                <p className="text-gray-500 text-lg">
+                  Aucun {currentMode === 'articles' ? 'article' : 'livre'} trouvé
+                </p>
               </div>
             )}
           </div>
@@ -340,22 +495,30 @@ export default function App() {
                 ) : (
                   <>
                     <div className="space-y-4 mb-6">
-                      {cart.map((article) => (
+                      {cart.map((item) => (
                         <div
-                          key={article.id}
+                          key={item.id}
                           className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                         >
                           <div className="flex-1">
-                            <h4 className="font-semibold text-gray-800">{article.name}</h4>
+                            <h4 className="font-semibold text-gray-800">
+                              {currentMode === 'articles'
+                                ? (item as Article).designation ||
+                                  (item as Article).name ||
+                                  'Article'
+                                : (item as Book).title}
+                            </h4>
                             <p className="text-sm text-gray-600">
                               <i className="fas fa-tag mr-1"></i>
-                              {article.type}
+                              {currentMode === 'articles'
+                                ? (item as Article).type
+                                : (item as Book).category}
                             </p>
                           </div>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => removeFromCart(article.id)}
+                            onClick={() => removeFromCart(item.id)}
                             className="btn-outline"
                           >
                             <i className="fas fa-trash mr-1"></i>
@@ -395,11 +558,21 @@ export default function App() {
                 <div className="mb-6">
                   <h3 className="font-semibold mb-3">Articles à emprunter :</h3>
                   <div className="space-y-2">
-                    {cart.map((article) => (
-                      <div key={article.id} className="flex items-center p-3 bg-blue-50 rounded-lg">
+                    {cart.map((item) => (
+                      <div key={item.id} className="flex items-center p-3 bg-blue-50 rounded-lg">
                         <i className="fas fa-check-circle text-blue-500 mr-3"></i>
-                        <span className="font-medium">{article.name}</span>
-                        <span className="ml-2 text-sm text-gray-600">({article.type})</span>
+                        <span className="font-medium">
+                          {currentMode === 'articles'
+                            ? (item as Article).designation || (item as Article).name || 'Article'
+                            : (item as Book).title}
+                        </span>
+                        <span className="ml-2 text-sm text-gray-600">
+                          (
+                          {currentMode === 'articles'
+                            ? (item as Article).type
+                            : (item as Book).category}
+                          )
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -436,6 +609,43 @@ export default function App() {
                       type="email"
                     />
                   </div>
+
+                  {/* Champs spécifiques au matériel de montagne */}
+                  {currentMode === 'articles' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <i className="fas fa-euro-sign mr-1"></i>
+                          Prix d'emprunt (facultatif)
+                        </label>
+                        <Input
+                          placeholder="0.00"
+                          value={borrower.rental_price}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setBorrower({ ...borrower, rental_price: e.target.value })
+                          }
+                          className="form-control"
+                          type="number"
+                          step="0.01"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <i className="fas fa-user-tie mr-1"></i>
+                          Nom de l'encadrant (facultatif)
+                        </label>
+                        <Input
+                          placeholder="Nom de l'encadrant pour la sortie"
+                          value={borrower.supervisor_name}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            setBorrower({ ...borrower, supervisor_name: e.target.value })
+                          }
+                          className="form-control"
+                        />
+                      </div>
+                    </>
+                  )}
+
                   <div className="flex flex-col sm:flex-row gap-3 pt-4">
                     <Button
                       onClick={confirmBorrow}
@@ -521,22 +731,30 @@ export default function App() {
                 </h2>
               </div>
               <div className="card-body">
-                <AddArticleForm onAdd={addArticle} />
+                <AddItemForm onAdd={addItem} currentMode={currentMode} />
 
                 <div className="mt-8">
-                  <h3 className="text-lg font-semibold mb-4">Articles existants</h3>
+                  <h3 className="text-lg font-semibold mb-4">{currentConfig.name} existants</h3>
                   <div className="grid gap-4">
-                    {articles.map((article) => (
+                    {currentItems.map((item) => (
                       <div
-                        key={article.id}
+                        key={item.id}
                         className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                       >
                         <div className="flex-1">
-                          <h4 className="font-semibold">{article.name}</h4>
-                          <p className="text-sm text-gray-600">{article.type}</p>
+                          <h4 className="font-semibold">
+                            {currentMode === 'articles'
+                              ? (item as Article).designation || (item as Article).name || 'Article'
+                              : (item as Book).title}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            {currentMode === 'articles'
+                              ? (item as Article).type
+                              : (item as Book).category}
+                          </p>
                         </div>
                         <div className="flex items-center space-x-2">
-                          {article.available ? (
+                          {item.available ? (
                             <span className="badge badge-success">
                               <i className="fas fa-check mr-1"></i>
                               Disponible
@@ -581,14 +799,20 @@ export default function App() {
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex-1 mb-4 sm:mb-0">
                               <h4 className="font-bold text-lg text-gray-800">
-                                {borrow.article && borrow.article.name
-                                  ? `${borrow.article.name}`
-                                  : `Article ID: ${borrow.article_id}`}
+                                {currentMode === 'articles'
+                                  ? (borrow as Borrow).article?.designation ||
+                                    (borrow as Borrow).article?.name ||
+                                    `Article ID: ${(borrow as Borrow).article_id}`
+                                  : (borrow as BookBorrow).book?.title ||
+                                    `Livre ID: ${(borrow as BookBorrow).book_id}`}
                               </h4>
                               <div className="mt-2 space-y-1">
                                 <p className="text-sm text-gray-600">
                                   <i className="fas fa-tag mr-2"></i>
-                                  Type: {borrow.article?.type || 'Type inconnu'}
+                                  Type:{' '}
+                                  {currentMode === 'articles'
+                                    ? (borrow as Borrow).article?.type || 'Type inconnu'
+                                    : (borrow as BookBorrow).book?.category || 'Catégorie inconnue'}
                                 </p>
                                 <p className="text-sm text-gray-600">
                                   <i className="fas fa-user mr-2"></i>
@@ -604,10 +828,7 @@ export default function App() {
                                 </p>
                               </div>
                             </div>
-                            <Button
-                              onClick={() => returnArticle(borrow.id)}
-                              className="btn-success"
-                            >
+                            <Button onClick={() => returnItem(borrow.id)} className="btn-success">
                               <i className="fas fa-undo mr-2"></i>
                               Retourner
                             </Button>
@@ -640,52 +861,98 @@ export default function App() {
   );
 }
 
-function AddArticleForm({ onAdd }: { onAdd: (name: string, type: string) => void }) {
-  const [name, setName] = useState('');
-  const [type, setType] = useState('');
+function AddItemForm({
+  onAdd,
+  currentMode,
+}: {
+  onAdd: (itemData: Partial<Article | Book>) => void;
+  currentMode: AppMode;
+}) {
+  const [formData, setFormData] = useState<Record<string, string>>({});
+
+  const handleSubmit = () => {
+    if (currentMode === 'articles') {
+      if (formData.designation) {
+        onAdd(formData);
+        setFormData({});
+      }
+    } else {
+      if (formData.title) {
+        onAdd(formData);
+        setFormData({});
+      }
+    }
+  };
+
+  const isValid = currentMode === 'articles' ? !!formData.designation : !!formData.title;
 
   return (
     <div className="card">
       <div className="card-header">
         <h3 className="text-lg font-semibold">
           <i className="fas fa-plus-circle mr-2"></i>
-          Ajouter un nouvel article
+          Ajouter un nouveau {currentMode === 'articles' ? 'matériel' : 'livre'}
         </h3>
       </div>
       <div className="card-body">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Nom de l'article</label>
-            <Input
-              placeholder="Ex: Casque Petzl Boreo"
-              value={name}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-              className="form-control"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
-            <Input
-              placeholder="Ex: casque, corde, baudrier..."
-              value={type}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setType(e.target.value)}
-              className="form-control"
-            />
-          </div>
+          {currentMode === 'articles' ? (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Désignation *
+                </label>
+                <Input
+                  placeholder="Ex: Casque Petzl Boreo"
+                  value={formData.designation || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormData({ ...formData, designation: e.target.value })
+                  }
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                <Input
+                  placeholder="Ex: casque, corde, baudrier..."
+                  value={formData.type || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormData({ ...formData, type: e.target.value })
+                  }
+                  className="form-control"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Titre *</label>
+                <Input
+                  placeholder="Titre du livre"
+                  value={formData.title || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Auteur</label>
+                <Input
+                  placeholder="Nom de l'auteur"
+                  value={formData.author || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setFormData({ ...formData, author: e.target.value })
+                  }
+                  className="form-control"
+                />
+              </div>
+            </>
+          )}
         </div>
-        <Button
-          onClick={() => {
-            if (name && type) {
-              onAdd(name, type);
-              setName('');
-              setType('');
-            }
-          }}
-          disabled={!name || !type}
-          className="mt-4 btn-primary"
-        >
+        <Button onClick={handleSubmit} disabled={!isValid} className="mt-4 btn-primary">
           <i className="fas fa-plus-circle mr-2"></i>
-          Ajouter l'article
+          Ajouter {currentMode === 'articles' ? 'le matériel' : 'le livre'}
         </Button>
       </div>
     </div>

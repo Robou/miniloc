@@ -139,7 +139,7 @@ L'application permet actuellement :
 ## Prochaines Étapes
 
 
-### Étape 6 : Système de Champs Personnalisés Modulaires
+### Étape 6 : bases de données pour gérer la bibliothèques et le matériel du club
 **Objectif :** Rendre l'application compatible pour différents types de clubs (bibliothèque ou matériel de montagne) en créant des tables distinctes dans la base de données : deux tables pour les livres et leurs emprunts (déjà implémentée mais à étoffer), et deux tables pour des articles de matériel de montagne et leurs emprunts. L'installateur humain pourra choisir s'il installe l'appli pour l'un, pour l'autre, ou pour les deux modes de fonctionnement.
 L'utilisateur final pourra switcher entre deux interfaces similaires mais indépendantes, entre bibliothèque livres et matériel, à volonté, si les deux modes sont implémentés.
 
