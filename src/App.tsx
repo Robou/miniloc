@@ -124,9 +124,11 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState('');
   const [session, setSession] = useState<Session | null>(null);
   const [borrows, setBorrows] = useState<Borrow[] | BookBorrow[]>([]);
+  const [showModeLockedToast, setShowModeLockedToast] = useState(false);
 
   const currentConfig = MODE_CONFIGS[currentMode];
   const currentItems = currentMode === 'articles' ? articles : books;
+  const isModeLockedByCart = cart.length > 0;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -134,7 +136,7 @@ export default function App() {
     });
     fetchArticles();
     fetchBorrows();
-  });
+  }, []);
 
   async function fetchArticles() {
     const { data, error } = await supabase.from(currentConfig.tableName).select('*');
@@ -144,6 +146,8 @@ export default function App() {
       } else {
         setBooks(data);
       }
+    } else {
+        console.log("problemo")
     }
   }
 
@@ -175,6 +179,8 @@ export default function App() {
 
   function clearCart() {
     setCart([]);
+    // Masquer le toast si affiché
+    setShowModeLockedToast(false);
   }
 
   function removeFromCart(itemId: number) {
@@ -228,6 +234,7 @@ export default function App() {
 
     alert('Emprunt réalisé avec succès !');
     setCart([]);
+    setShowModeLockedToast(false);
     setStep('catalogue');
     fetchArticles();
     fetchBorrows();
@@ -298,16 +305,26 @@ export default function App() {
         </div>
 
         {/* Mode Selector */}
-        <div className="flex justify-center mb-6">
+        <div className="flex flex-col items-center mb-6">
           <div className="bg-white rounded-lg shadow-sm border p-1 flex">
             {Object.entries(MODE_CONFIGS).map(([mode, config]) => (
               <button
                 key={mode}
-                onClick={() => setCurrentMode(mode as AppMode)}
+                onClick={() => {
+                  if (isModeLockedByCart && mode !== currentMode) {
+                    setShowModeLockedToast(true);
+                    setTimeout(() => setShowModeLockedToast(false), 3000);
+                  } else {
+                    setCurrentMode(mode as AppMode);
+                  }
+                }}
+                disabled={isModeLockedByCart && mode !== currentMode}
                 className={`px-4 py-2 rounded-md transition-colors ${
                   currentMode === mode
                     ? 'bg-blue-500 text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    : isModeLockedByCart && mode !== currentMode
+                      ? 'text-gray-400 cursor-not-allowed bg-gray-50'
+                      : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 <i className={`${config.icon} mr-2`}></i>
@@ -315,6 +332,19 @@ export default function App() {
               </button>
             ))}
           </div>
+
+          {/* Toast de verrouillage du mode */}
+          {showModeLockedToast && (
+            <div className="mt-3 bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 rounded-lg shadow-sm animate-pulse">
+              <div className="flex items-center">
+                <i className="fas fa-lock mr-2"></i>
+                <span className="text-sm">
+                  Impossible de changer de mode : videz d'abord votre panier pour éviter de mélanger
+                  les emprunts
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Navigation Tabs */}

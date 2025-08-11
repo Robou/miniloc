@@ -40,3 +40,7 @@ dist-ssr
 .amplify
 amplify_outputs*
 amplifyconfiguration*
+database/books_rows_export.csv
+database/books_rows.csv
+.gitignore
+database/equipment_rows.csv
