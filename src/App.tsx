@@ -1,112 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { createClient, Session } from '@supabase/supabase-js';
-import { Input } from './components/ui/input';
+import { Session } from '@supabase/supabase-js';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button } from './components/ui/button';
+import { Input } from './components/ui/input';
+import supabase from './lib/supabase';
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL!,
-  import.meta.env.VITE_SUPABASE_ANON_KEY!
-);
-
-// Type pour les livres
-type Book = {
-  id: number;
-  title: string;
-  author?: string;
-  category?: string;
-  publisher?: string;
-  publication_year?: number;
-  description?: string;
-  keywords?: string;
-  isbn?: string;
-  type?: string;
-  storage_location?: string;
-  available: boolean;
-  created_at: string;
-};
-
-// Type pour les articles (matériel de montagne)
-type Article = {
-  id: number;
-  // Champs existants
-  name?: string; // Garde pour compatibilité, mais sera remplacé par designation
-  type?: string;
-  available: boolean;
-  created_at?: string;
-  // Nouveaux champs pour le matériel de montagne
-  designation?: string;
-  is_epi?: boolean;
-  color?: string;
-  manufacturer?: string;
-  model?: string;
-  size?: string;
-  manufacturer_id?: string;
-  club_id?: string;
-  manufacturing_date?: string;
-  operational_status?: string;
-  usage_notes?: string;
-};
-
-type BookBorrow = {
-  id: number;
-  book_id: number;
-  name: string;
-  email?: string;
-  borrowed_at: string;
-  book: Book;
-};
-
-type Borrow = {
-  id: number;
-  article_id: number;
-  name: string;
-  email?: string;
-  borrowed_at: string;
-  // Nouveaux champs pour les emprunts de matériel
-  rental_price?: number;
-  supervisor_name?: string;
-  article: Article;
-};
-
-// Configuration des modes
-type AppMode = 'articles' | 'books';
-
-type ModeConfig = {
-  name: string;
-  icon: string;
-  tableName: string;
-  borrowTableName: string;
-  itemIdField: string;
-  displayField: string;
-  createFunction: string;
-  returnFunction: string;
-};
-
-const MODE_CONFIGS: Record<AppMode, ModeConfig> = {
-  articles: {
-    name: 'Matériel de montagne',
-    icon: 'fas fa-mountain',
-    tableName: 'equipment', // Utilise la nouvelle table equipment
-    borrowTableName: 'equipment_borrows',
-    itemIdField: 'equipment_id',
-    displayField: 'designation',
-    createFunction: 'create_equipment_borrow',
-    returnFunction: 'return_equipment',
-  },
-  books: {
-    name: 'Bibliothèque',
-    icon: 'fas fa-book',
-    tableName: 'books',
-    borrowTableName: 'book_borrows',
-    itemIdField: 'book_id',
-    displayField: 'title',
-    createFunction: 'create_book_borrow',
-    returnFunction: 'return_book',
-  },
-};
+import { AppMode, Article, Book, BookBorrow, Borrow, MODE_CONFIGS } from './types/AppMode';
 
 export default function App() {
-  const [currentMode, setCurrentMode] = useState<AppMode>('articles');
+  const newLocal = useState<AppMode>('articles');
+  const [currentMode, setCurrentMode] = newLocal;
   const [articles, setArticles] = useState<Article[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
   const [search, setSearch] = useState('');
@@ -130,15 +32,7 @@ export default function App() {
   const currentItems = currentMode === 'articles' ? articles : books;
   const isModeLockedByCart = cart.length > 0;
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-    fetchArticles();
-    fetchBorrows();
-  }, []);
-
-  async function fetchArticles() {
+  const fetchArticles = useCallback(async () => {
     const { data, error } = await supabase.from(currentConfig.tableName).select('*');
     if (!error && data) {
       if (currentMode === 'articles') {
@@ -146,19 +40,25 @@ export default function App() {
       } else {
         setBooks(data);
       }
-    } else {
-        console.log("problemo")
     }
-  }
+  }, [currentConfig.tableName, currentMode]);
 
-  async function fetchBorrows() {
+  const fetchBorrows = useCallback(async () => {
     const itemTable = currentMode === 'articles' ? 'equipment' : 'books';
     const { data, error } = await supabase.from(currentConfig.borrowTableName).select(`
         *,
         ${currentMode === 'articles' ? 'equipment' : 'book'}:${itemTable}(*)
       `);
     if (!error && data) setBorrows(data);
-  }
+  }, [currentConfig.borrowTableName, currentMode]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+    fetchArticles();
+    fetchBorrows();
+  }, [currentMode, fetchArticles, fetchBorrows]); //recharge les données quand on change de mode
 
   function addToCart(item: Article | Book) {
     if (!cart.find((a) => a.id === item.id)) {
