@@ -5,11 +5,13 @@ import { Input } from './components/ui/Input';
 import supabase from './lib/supabase';
 
 import { AppMode, Article, Book, BookBorrow, Borrow, MODE_CONFIGS } from './types/AppMode';
-import ItemCard from './components/ui/ItemCard';
+//import ItemCard from './components/ui/ItemCard';
 import NavTabs from './components/ui/NavTabs';
 import Catalog from './components/CatalogTab';
-import SearchBar from './components/ui/SearchBar';
+//import SearchBar from './components/ui/SearchBar';
 import CartTab from './components/CartTab';
+import BorrowFormTab from './components/BorrowFormTab';
+import BorrowsTab from './components/BorrowsTab';
 
 export default function App() {
   const newLocal = useState<AppMode>('articles');
@@ -314,128 +316,14 @@ export default function App() {
 
         {/* Borrow Form Tab */}
         {step === 'borrow' && (
-          <div className="fade-in">
-            <div className="card">
-              <div className="card-header">
-                <h2 className="text-xl font-bold">
-                  <i className="fas fa-hand-holding mr-2"></i>
-                  Finaliser l'emprunt
-                </h2>
-              </div>
-              <div className="card-body">
-                <div className="mb-6">
-                  <h3 className="font-semibold mb-3">Articles à emprunter :</h3>
-                  <div className="space-y-2">
-                    {cart.map((item) => (
-                      <div key={item.id} className="flex items-center p-3 bg-blue-50 rounded-lg">
-                        <i className="fas fa-check-circle text-blue-500 mr-3"></i>
-                        <span className="font-medium">
-                          {currentMode === 'articles'
-                            ? (item as Article).designation || (item as Article).name || 'Article'
-                            : (item as Book).title}
-                        </span>
-                        <span className="ml-2 text-sm text-gray-600">
-                          (
-                          {currentMode === 'articles'
-                            ? (item as Article).type
-                            : (item as Book).category}
-                          )
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <i className="fas fa-user mr-1"></i>
-                      Votre nom *
-                    </label>
-                    <Input
-                      placeholder="Entrez votre nom complet"
-                      value={borrower.name}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setBorrower({ ...borrower, name: e.target.value })
-                      }
-                      className="form-control"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <i className="fas fa-envelope mr-1"></i>
-                      Votre email (facultatif)
-                    </label>
-                    <Input
-                      placeholder="votre.email@exemple.com"
-                      value={borrower.email}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setBorrower({ ...borrower, email: e.target.value })
-                      }
-                      className="form-control"
-                      type="email"
-                    />
-                  </div>
-
-                  {/* Champs spécifiques au matériel de montagne */}
-                  {currentMode === 'articles' && (
-                    <>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <i className="fas fa-euro-sign mr-1"></i>
-                          Prix d'emprunt (facultatif)
-                        </label>
-                        <Input
-                          placeholder="0.00"
-                          value={borrower.rental_price}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            setBorrower({ ...borrower, rental_price: e.target.value })
-                          }
-                          className="form-control"
-                          type="number"
-                          step="0.01"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <i className="fas fa-user-tie mr-1"></i>
-                          Nom de l'encadrant (facultatif)
-                        </label>
-                        <Input
-                          placeholder="Nom de l'encadrant pour la sortie"
-                          value={borrower.supervisor_name}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            setBorrower({ ...borrower, supervisor_name: e.target.value })
-                          }
-                          className="form-control"
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                    <Button
-                      onClick={confirmBorrow}
-                      className="btn-primary flex-1"
-                      disabled={!borrower.name}
-                    >
-                      <i className="fas fa-check-circle mr-2"></i>
-                      Confirmer l'emprunt
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setStep('cart')}
-                      className="btn-outline"
-                    >
-                      <i className="fas fa-arrow-left mr-2"></i>
-                      Retour au panier
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <BorrowFormTab
+            cart={cart}
+            borrower={borrower}
+            onBorrowerChange={(field, value) => setBorrower({ ...borrower, [field]: value })}
+            onConfirmBorrow={confirmBorrow}
+            onBackToCart={() => setStep('cart')}
+            currentMode={currentMode}
+          />
         )}
 
         {/* Login Tab */}
@@ -545,70 +433,7 @@ export default function App() {
 
         {/* Borrows Tab */}
         {step === 'borrows' && (
-          <div className="fade-in">
-            <div className="card">
-              <div className="card-header">
-                <h2 className="text-xl font-bold">
-                  <i className="fas fa-hand-holding mr-2"></i>
-                  Emprunts en cours
-                </h2>
-              </div>
-              <div className="card-body">
-                {borrows.length === 0 ? (
-                  <div className="text-center py-12">
-                    <i className="fas fa-hand-holding text-6xl text-gray-300 mb-4"></i>
-                    <p className="text-gray-500 text-lg">Aucun emprunt en cours</p>
-                  </div>
-                ) : (
-                  <div className="grid gap-6">
-                    {borrows.map((borrow) => (
-                      <div key={borrow.id} className="card">
-                        <div className="card-body">
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex-1 mb-4 sm:mb-0">
-                              <h4 className="font-bold text-lg text-gray-800">
-                                {currentMode === 'articles'
-                                  ? (borrow as Borrow).article?.designation ||
-                                    (borrow as Borrow).article?.name ||
-                                    `Article ID: ${(borrow as Borrow).article_id}`
-                                  : (borrow as BookBorrow).book?.title ||
-                                    `Livre ID: ${(borrow as BookBorrow).book_id}`}
-                              </h4>
-                              <div className="mt-2 space-y-1">
-                                <p className="text-sm text-gray-600">
-                                  <i className="fas fa-tag mr-2"></i>
-                                  Type:{' '}
-                                  {currentMode === 'articles'
-                                    ? (borrow as Borrow).article?.type || 'Type inconnu'
-                                    : (borrow as BookBorrow).book?.category || 'Catégorie inconnue'}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  <i className="fas fa-user mr-2"></i>
-                                  Emprunté par: <span className="font-medium">{borrow.name}</span>
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  <i className="fas fa-envelope mr-2"></i>
-                                  Contact: {borrow.email || 'Non renseigné'}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  <i className="fas fa-calendar mr-2"></i>
-                                  Date: {new Date(borrow.borrowed_at).toLocaleDateString('fr-FR')}
-                                </p>
-                              </div>
-                            </div>
-                            <Button onClick={() => returnItem(borrow.id)} className="btn-success">
-                              <i className="fas fa-undo mr-2"></i>
-                              Retourner
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <BorrowsTab borrows={borrows} onReturnItem={returnItem} currentMode={currentMode} />
         )}
 
         {/* Footer */}
