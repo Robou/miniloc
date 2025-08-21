@@ -6,6 +6,7 @@ import supabase from './lib/supabase';
 
 import { AppMode, Article, Book, BookBorrow, Borrow, MODE_CONFIGS } from './types/AppMode';
 import ItemCard from './components/ui/itemCard';
+import NavTabs from './components/ui/navTabs';
 
 export default function App() {
   const newLocal = useState<AppMode>('articles');
@@ -249,36 +250,40 @@ export default function App() {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="nav-tabs flex flex-wrap mb-6">
-          <button
-            className={`nav-tab ${step === 'catalogue' ? 'active' : ''}`}
-            onClick={() => setStep('catalogue')}
-          >
-            <i className="fas fa-list mr-2"></i>
-            Catalogue
-          </button>
-          <button
-            className={`nav-tab ${step === 'cart' ? 'active' : ''}`}
-            onClick={() => setStep('cart')}
-          >
-            <i className="fas fa-shopping-cart mr-2"></i>
-            Panier ({cart.length})
-          </button>
-          <button
-            className={`nav-tab ${step === 'borrows' ? 'active' : ''}`}
-            onClick={() => setStep('borrows')}
-          >
-            <i className="fas fa-hand-holding mr-2"></i>
-            Emprunts
-          </button>
-          <button
-            className={`nav-tab admin-tab ${step === 'login' ? 'active' : ''}`}
-            onClick={() => setStep('login')}
-          >
-            <i className="fas fa-lock mr-2"></i>
-            Admin
-          </button>
-        </div>
+        <NavTabs
+          tabs={[
+            {
+              id: 'catalogue',
+              label: 'Catalogue',
+              icon: 'fas fa-list',
+              isActive: step === 'catalogue',
+              onClick: () => setStep('catalogue'),
+            },
+            {
+              id: 'cart',
+              label: 'Panier',
+              icon: 'fas fa-shopping-cart',
+              isActive: step === 'cart',
+              onClick: () => setStep('cart'),
+              badge: cart.length.toString(),
+            },
+            {
+              id: 'borrows',
+              label: 'Emprunts',
+              icon: 'fas fa-hand-holding',
+              isActive: step === 'borrows',
+              onClick: () => setStep('borrows'),
+            },
+            {
+              id: 'login',
+              label: 'Admin',
+              icon: 'fas fa-lock',
+              isActive: step === 'login',
+              onClick: () => setStep('login'),
+            },
+          ]}
+          //currentStep={step}
+        />
 
         {/* Catalogue Tab */}
         {step === 'catalogue' && (
@@ -319,6 +324,7 @@ export default function App() {
                 .map((item) => {
                   const isInCart = !!cart.find((a) => a.id === item.id);
                   return (
+                    /* ItemCard */
                     <ItemCard
                       key={item.id}
                       item={item}
