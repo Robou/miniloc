@@ -1,7 +1,7 @@
 import { Session } from '@supabase/supabase-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button } from './components/ui/Button';
-import { Input } from './components/ui/Input';
+//import { Button } from './components/ui/Button';
+//import { Input } from './components/ui/Input';
 import supabase from './lib/supabase';
 
 import { AppMode, Article, Book, BookBorrow, Borrow, MODE_CONFIGS } from './types/AppMode';
@@ -12,6 +12,8 @@ import Catalog from './components/CatalogTab';
 import CartTab from './components/CartTab';
 import BorrowFormTab from './components/BorrowFormTab';
 import BorrowsTab from './components/BorrowsTab';
+import LoginTab from './components/LoginTab';
+import AdminTab from './components/AdminTab';
 
 export default function App() {
   const newLocal = useState<AppMode>('articles');
@@ -328,107 +330,23 @@ export default function App() {
 
         {/* Login Tab */}
         {step === 'login' && (
-          <div className="fade-in">
-            <div className="card max-w-md mx-auto">
-              <div className="card-header">
-                <h2 className="text-xl font-bold">
-                  <i className="fas fa-lock mr-2"></i>
-                  Connexion Administrateur
-                </h2>
-              </div>
-              <div className="card-body">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email administrateur
-                    </label>
-                    <Input
-                      placeholder="admin@exemple.com"
-                      value={adminEmail}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setAdminEmail(e.target.value)
-                      }
-                      className="form-control"
-                      type="email"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Mot de passe
-                    </label>
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      value={adminPassword}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setAdminPassword(e.target.value)
-                      }
-                      className="form-control"
-                    />
-                  </div>
-                  <Button onClick={handleLogin} className="w-full btn-primary">
-                    <i className="fas fa-sign-in-alt mr-2"></i>
-                    Se connecter
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <LoginTab
+            email={adminEmail}
+            password={adminPassword}
+            onEmailChange={setAdminEmail}
+            onPasswordChange={setAdminPassword}
+            onLogin={handleLogin}
+          />
         )}
 
         {/* Admin Tab */}
         {step === 'admin' && session && (
-          <div className="fade-in">
-            <div className="card">
-              <div className="card-header">
-                <h2 className="text-xl font-bold">
-                  <i className="fas fa-cogs mr-2"></i>
-                  Espace Administrateur
-                </h2>
-              </div>
-              <div className="card-body">
-                <AddItemForm onAdd={addItem} currentMode={currentMode} />
-
-                <div className="mt-8">
-                  <h3 className="text-lg font-semibold mb-4">{currentConfig.name} existants</h3>
-                  <div className="grid gap-4">
-                    {currentItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                      >
-                        <div className="flex-1">
-                          <h4 className="font-semibold">
-                            {currentMode === 'articles'
-                              ? (item as Article).designation || (item as Article).name || 'Article'
-                              : (item as Book).title}
-                          </h4>
-                          <p className="text-sm text-gray-600">
-                            {currentMode === 'articles'
-                              ? (item as Article).type
-                              : (item as Book).category}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          {item.available ? (
-                            <span className="badge badge-success">
-                              <i className="fas fa-check mr-1"></i>
-                              Disponible
-                            </span>
-                          ) : (
-                            <span className="badge badge-danger">
-                              <i className="fas fa-times mr-1"></i>
-                              Emprunté
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AdminTab
+            items={currentItems}
+            onAddItem={addItem}
+            currentMode={currentMode}
+            currentConfigName={currentConfig.name}
+          />
         )}
 
         {/* Borrows Tab */}
@@ -437,12 +355,6 @@ export default function App() {
         )}
 
         {/* Footer */}
-        {/* <div className="footer mt-12">
-          <p>
-            <i className="fas fa-mountain mr-2"></i>
-            Club Alpin Français - Section d'Avignon et Vaucluse
-          </p>
-        </div> */}
       </div>
       <footer className="py-6 bg-gray-800 text-white text-center w-full">
         <p>
@@ -454,7 +366,7 @@ export default function App() {
   );
 }
 
-function AddItemForm({
+/* function AddItemForm({
   onAdd,
   currentMode,
 }: {
@@ -550,4 +462,4 @@ function AddItemForm({
       </div>
     </div>
   );
-}
+} */
