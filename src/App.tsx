@@ -1,12 +1,14 @@
 import { Session } from '@supabase/supabase-js';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button } from './components/ui/button';
-import { Input } from './components/ui/input';
+import { Button } from './components/ui/Button';
+import { Input } from './components/ui/Input';
 import supabase from './lib/supabase';
 
 import { AppMode, Article, Book, BookBorrow, Borrow, MODE_CONFIGS } from './types/AppMode';
-import ItemCard from './components/ui/itemCard';
-import NavTabs from './components/ui/navTabs';
+import ItemCard from './components/ui/ItemCard';
+import NavTabs from './components/ui/NavTabs';
+import Catalog from './components/Catalog';
+import SearchBar from './components/ui/SearchBar';
 
 export default function App() {
   const newLocal = useState<AppMode>('articles');
@@ -287,70 +289,14 @@ export default function App() {
 
         {/* Catalogue Tab */}
         {step === 'catalogue' && (
-          <div className="fade-in">
-            {/* Search Bar */}
-            <div className="search-container">
-              <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Input
-                      placeholder="Rechercher un article..."
-                      value={search}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setSearch(e.target.value)
-                      }
-                      className="form-control pl-10"
-                    />
-                    <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                  </div>
-                </div>
-                <Button className="btn-primary">
-                  <i className="fas fa-search mr-2"></i>
-                  Rechercher
-                </Button>
-              </div>
-            </div>
-
-            {/* Items Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentItems
-                .filter((item) => {
-                  const searchField =
-                    currentMode === 'articles'
-                      ? (item as Article).designation || (item as Article).name || ''
-                      : (item as Book).title || '';
-                  return searchField.toLowerCase().includes(search.toLowerCase());
-                })
-                .map((item) => {
-                  const isInCart = !!cart.find((a) => a.id === item.id);
-                  return (
-                    /* ItemCard */
-                    <ItemCard
-                      key={item.id}
-                      item={item}
-                      isInCart={isInCart}
-                      onAddToCart={addToCart}
-                      currentMode={currentMode}
-                    />
-                  );
-                })}
-            </div>
-
-            {currentItems.filter((item) => {
-              const searchField =
-                currentMode === 'articles'
-                  ? (item as Article).designation || (item as Article).name || ''
-                  : (item as Book).title || '';
-              return searchField.toLowerCase().includes(search.toLowerCase());
-            }).length === 0 && (
-              <div className="text-center py-12">
-                <i className="fas fa-search text-6xl text-gray-300 mb-4"></i>
-                <p className="text-gray-500 text-lg">
-                  Aucun {currentMode === 'articles' ? 'article' : 'livre'} trouvé
-                </p>
-              </div>
-            )}
-          </div>
+          <Catalog
+            items={currentItems}
+            search={search}
+            onSearchChange={setSearch}
+            cart={cart}
+            onAddToCart={addToCart}
+            currentMode={currentMode}
+          />
         )}
 
         {/* Cart Tab */}
