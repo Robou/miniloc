@@ -45,7 +45,7 @@ const BorrowFormTab: React.FC<BorrowFormTabProps> = ({
                   <i className="fas fa-check-circle text-blue-500 mr-3"></i>
                   <span className="font-medium">
                     {currentMode === 'articles'
-                      ? (item as Article).designation || (item as Article).name || 'Article'
+                      ? (item as Article).designation || 'Article'
                       : (item as Book).title}
                   </span>
                   <span className="ml-2 text-sm text-gray-600">

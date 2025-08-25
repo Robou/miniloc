@@ -22,9 +22,7 @@ const Catalog: React.FC<CatalogProps> = ({
 }) => {
   const filteredItems = items.filter((item) => {
     const searchField =
-      currentMode === 'articles'
-        ? (item as Article).designation || (item as Article).name || ''
-        : (item as Book).title || '';
+      currentMode === 'articles' ? (item as Article).designation || '' : (item as Book).title || '';
     return searchField.toLowerCase().includes(search.toLowerCase());
   });
 

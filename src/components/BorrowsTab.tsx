@@ -1,9 +1,9 @@
 import React from 'react';
-import { Borrow, BookBorrow } from '../types/AppMode';
+import { ArticleBorrow, BookBorrow } from '../types/AppMode';
 import { Button } from './ui/Button';
 
 interface BorrowsTabProps {
-  borrows: (Borrow | BookBorrow)[];
+  borrows: (ArticleBorrow | BookBorrow)[];
   onReturnItem: (borrowId: number) => void;
   currentMode: 'articles' | 'books';
 }
@@ -33,9 +33,8 @@ const BorrowsTab: React.FC<BorrowsTabProps> = ({ borrows, onReturnItem, currentM
                       <div className="flex-1 mb-4 sm:mb-0">
                         <h4 className="font-bold text-lg text-gray-800">
                           {currentMode === 'articles'
-                            ? (borrow as Borrow).article?.designation ||
-                              (borrow as Borrow).article?.name ||
-                              `Article ID: ${(borrow as Borrow).article_id}`
+                            ? (borrow as ArticleBorrow).article?.designation ||
+                              `Article ID: ${(borrow as ArticleBorrow).article_id}`
                             : (borrow as BookBorrow).book?.title ||
                               `Livre ID: ${(borrow as BookBorrow).book_id}`}
                         </h4>
@@ -44,7 +43,7 @@ const BorrowsTab: React.FC<BorrowsTabProps> = ({ borrows, onReturnItem, currentM
                             <i className="fas fa-tag mr-2"></i>
                             Type:{' '}
                             {currentMode === 'articles'
-                              ? (borrow as Borrow).article?.type || 'Type inconnu'
+                              ? (borrow as ArticleBorrow).article?.type || 'Type inconnu'
                               : (borrow as BookBorrow).book?.category || 'Catégorie inconnue'}
                           </p>
                           <p className="text-sm text-gray-600">

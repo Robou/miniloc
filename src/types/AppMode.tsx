@@ -19,7 +19,6 @@ export type Book = {
 export type Article = {
   id: number;
   // Champs existants
-  name?: string; // Garde pour compatibilité, mais sera remplacé par designation
   type?: string;
   available: boolean;
   created_at?: string;
@@ -46,7 +45,7 @@ export type BookBorrow = {
   book: Book;
 };
 
-export type Borrow = {
+export type ArticleBorrow = {
   id: number;
   article_id: number;
   name: string;

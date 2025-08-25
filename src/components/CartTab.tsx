@@ -49,7 +49,7 @@ const CartTab: React.FC<CartTabProps> = ({
                     <div className="flex-1">
                       <h4 className="font-semibold text-gray-800">
                         {currentMode === 'articles'
-                          ? (item as Article).designation || (item as Article).name || 'Article'
+                          ? (item as Article).designation || 'Article'
                           : (item as Book).title}
                       </h4>
                       <p className="text-sm text-gray-600">

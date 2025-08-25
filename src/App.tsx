@@ -1,14 +1,14 @@
 import { Session } from '@supabase/supabase-js';
-import React, { useCallback, useEffect, useState } from 'react';
-//import { Button } from './components/ui/Button';
-//import { Input } from './components/ui/Input';
+import { useCallback, useEffect, useState } from 'react';
 import supabase from './lib/supabase';
+import { addToCart, clearCart, removeFromCart } from './utils/cartUtils';
+import { confirmBorrow, returnItem } from './utils/borrowUtils';
+import { handleLogin } from './utils/authUtils';
+import { addItem } from './utils/itemUtils';
 
-import { AppMode, Article, Book, BookBorrow, Borrow, MODE_CONFIGS } from './types/AppMode';
-//import ItemCard from './components/ui/ItemCard';
+import { AppMode, Article, Book, BookBorrow, ArticleBorrow, MODE_CONFIGS } from './types/AppMode';
 import NavTabs from './components/ui/NavTabs';
 import Catalog from './components/CatalogTab';
-//import SearchBar from './components/ui/SearchBar';
 import CartTab from './components/CartTab';
 import BorrowFormTab from './components/BorrowFormTab';
 import BorrowsTab from './components/BorrowsTab';
@@ -34,7 +34,7 @@ export default function App() {
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [session, setSession] = useState<Session | null>(null);
-  const [borrows, setBorrows] = useState<Borrow[] | BookBorrow[]>([]);
+  const [borrows, setBorrows] = useState<ArticleBorrow[] | BookBorrow[]>([]);
   const [showModeLockedToast, setShowModeLockedToast] = useState(false);
 
   const currentConfig = MODE_CONFIGS[currentMode];
@@ -69,134 +69,37 @@ export default function App() {
     fetchBorrows();
   }, [currentMode, fetchArticles, fetchBorrows]); //recharge les données quand on change de mode
 
-  function addToCart(item: Article | Book) {
-    if (!cart.find((a) => a.id === item.id)) {
-      setCart([...cart, item]);
+  const addToCartHandler = (item: Article | Book) => {
+    setCart(addToCart(cart, item));
+  };
 
-      // Déclencher l'animation directement sur l'élément
-      setTimeout(() => {
-        const element = document.getElementById(`item-${item.id}`);
-        if (element) {
-          element.classList.add('bounce-in');
-          setTimeout(() => {
-            element.classList.remove('bounce-in');
-          }, 300);
-        }
-      }, 10);
-    }
-  }
-
-  function clearCart() {
-    setCart([]);
-    // Masquer le toast si affiché
+  const clearCartHandler = () => {
+    setCart(clearCart());
     setShowModeLockedToast(false);
-  }
+  };
 
-  function removeFromCart(itemId: number) {
-    setCart(cart.filter((a) => a.id !== itemId));
-  }
+  const removeFromCartHandler = (itemId: number) => {
+    setCart(removeFromCart(cart, itemId));
+  };
 
-  async function confirmBorrow() {
-    const errors: string[] = [];
-
-    for (const item of cart) {
-      const params: Record<string, string | number | null> = {
-        [`p_${currentConfig.itemIdField.replace('_id', '')}_id`]: item.id,
-        p_name: borrower.name,
-        p_email: borrower.email || null,
-      };
-
-      // Ajouter les champs spécifiques au matériel de montagne
-      if (currentMode === 'articles') {
-        if (borrower.rental_price) {
-          params.p_rental_price = parseFloat(borrower.rental_price);
-        }
-        if (borrower.supervisor_name) {
-          params.p_supervisor_name = borrower.supervisor_name;
-        }
-      }
-
-      const { data, error } = await supabase.rpc(currentConfig.createFunction, params);
-
-      const itemName =
-        currentMode === 'articles'
-          ? (item as Article).designation || (item as Article).name || 'Article'
-          : (item as Book).title;
-
-      if (error) {
-        errors.push(`Erreur technique pour ${itemName}: ${error.message}`);
-        continue;
-      }
-
-      if (!data.success) {
-        errors.push(`${itemName}: ${data.error}`);
-        continue;
-      }
-    }
-
-    if (errors.length > 0) {
-      alert(
-        `Erreurs lors de l'emprunt:\n${errors.join('\n')}\n\nVeuillez corriger les informations et réessayer.`
-      );
-      return;
-    }
-
-    alert('Emprunt réalisé avec succès !');
+  const confirmBorrowHandler = async () => {
+    await confirmBorrow(cart, borrower, currentMode, fetchArticles, fetchBorrows);
     setCart([]);
     setShowModeLockedToast(false);
     setStep('catalogue');
-    fetchArticles();
-    fetchBorrows();
-  }
+  };
 
-  async function returnItem(borrowId: number) {
-    const itemType = currentMode === 'articles' ? 'article' : 'livre';
-    if (!confirm(`Êtes-vous sûr de vouloir retourner cet ${itemType} ?`)) {
-      return;
-    }
+  const returnItemHandler = async (borrowId: number) => {
+    await returnItem(borrowId, currentMode, fetchArticles, fetchBorrows);
+  };
 
-    const { data, error } = await supabase.rpc(currentConfig.returnFunction, {
-      p_borrow_id: borrowId,
-    });
+  const handleLoginHandler = async () => {
+    await handleLogin(adminEmail, adminPassword, setSession, setStep);
+  };
 
-    if (error) {
-      alert(`Erreur technique lors du retour: ${error.message}`);
-      return;
-    }
-
-    if (!data.success) {
-      alert(`Erreur lors du retour: ${data.error}`);
-      return;
-    }
-
-    alert(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} retourné avec succès !`);
-    fetchArticles();
-    fetchBorrows();
-  }
-
-  async function handleLogin() {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: adminEmail,
-      password: adminPassword,
-    });
-
-    if (error) {
-      alert(`Erreur de connexion : ${error.message}`);
-      return;
-    }
-
-    if (data.session) {
-      setSession(data.session);
-      setStep('admin');
-    } else {
-      alert('Échec de connexion administrateur');
-    }
-  }
-
-  async function addItem(itemData: Partial<Article | Book>) {
-    const { error } = await supabase.from(currentConfig.tableName).insert(itemData);
-    if (!error) fetchArticles();
-  }
+  const addItemHandler = async (itemData: Partial<Article | Book>) => {
+    await addItem(itemData, currentMode, fetchArticles);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -299,7 +202,7 @@ export default function App() {
             search={search}
             onSearchChange={setSearch}
             cart={cart}
-            onAddToCart={addToCart}
+            onAddToCart={addToCartHandler}
             currentMode={currentMode}
           />
         )}
@@ -308,8 +211,8 @@ export default function App() {
         {step === 'cart' && (
           <CartTab
             cart={cart}
-            onRemoveFromCart={removeFromCart}
-            onClearCart={clearCart}
+            onRemoveFromCart={removeFromCartHandler}
+            onClearCart={clearCartHandler}
             onProceedToBorrow={() => setStep('borrow')}
             onGoToCatalogue={() => setStep('catalogue')}
             currentMode={currentMode}
@@ -322,7 +225,7 @@ export default function App() {
             cart={cart}
             borrower={borrower}
             onBorrowerChange={(field, value) => setBorrower({ ...borrower, [field]: value })}
-            onConfirmBorrow={confirmBorrow}
+            onConfirmBorrow={confirmBorrowHandler}
             onBackToCart={() => setStep('cart')}
             currentMode={currentMode}
           />
@@ -335,7 +238,7 @@ export default function App() {
             password={adminPassword}
             onEmailChange={setAdminEmail}
             onPasswordChange={setAdminPassword}
-            onLogin={handleLogin}
+            onLogin={handleLoginHandler}
           />
         )}
 
@@ -343,7 +246,7 @@ export default function App() {
         {step === 'admin' && session && (
           <AdminTab
             items={currentItems}
-            onAddItem={addItem}
+            onAddItem={addItemHandler}
             currentMode={currentMode}
             currentConfigName={currentConfig.name}
           />
@@ -351,7 +254,11 @@ export default function App() {
 
         {/* Borrows Tab */}
         {step === 'borrows' && (
-          <BorrowsTab borrows={borrows} onReturnItem={returnItem} currentMode={currentMode} />
+          <BorrowsTab
+            borrows={borrows}
+            onReturnItem={returnItemHandler}
+            currentMode={currentMode}
+          />
         )}
 
         {/* Footer */}

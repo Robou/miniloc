@@ -19,9 +19,7 @@ const ItemCard: React.FunctionComponent<ItemCardProps> = ({
   const typeClass = `type-${itemType?.toLowerCase().replace(/\s+/g, '-') || 'default'}`;
 
   const displayName =
-    currentMode === 'articles'
-      ? (item as Article).designation || (item as Article).name || 'Article'
-      : (item as Book).title;
+    currentMode === 'articles' ? (item as Article).designation || 'Article' : (item as Book).title;
 
   return (
     <div key={item.id} id={`item-${item.id}`} className={`card article-card ${typeClass} fade-in`}>
