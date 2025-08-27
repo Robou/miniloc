@@ -47,14 +47,14 @@ export type BookBorrow = {
 
 export type ArticleBorrow = {
   id: number;
-  article_id: number;
+  equipment_id: number;
   name: string;
   email?: string;
   borrowed_at: string;
   // Nouveaux champs pour les emprunts de matériel
   rental_price?: number;
   supervisor_name?: string;
-  article: Article;
+  equipment: Article;
 };
 
 // Configuration des modes

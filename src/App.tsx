@@ -58,7 +58,12 @@ export default function App() {
         *,
         ${currentMode === 'articles' ? 'equipment' : 'book'}:${itemTable}(*)
       `);
-    if (!error && data) setBorrows(data);
+    if (!error && data) {
+      console.log('Fetched borrows data:', data);
+      setBorrows(data);
+    } else {
+      console.error('Error fetching borrows:', error);
+    }
   }, [currentConfig.borrowTableName, currentMode]);
 
   useEffect(() => {
@@ -231,6 +236,15 @@ export default function App() {
           />
         )}
 
+        {/* Borrows Tab */}
+        {step === 'borrows' && (
+          <BorrowsTab
+            borrows={borrows}
+            onReturnItem={returnItemHandler}
+            currentMode={currentMode}
+          />
+        )}
+
         {/* Login Tab */}
         {step === 'login' && (
           <LoginTab
@@ -249,15 +263,6 @@ export default function App() {
             onAddItem={addItemHandler}
             currentMode={currentMode}
             currentConfigName={currentConfig.name}
-          />
-        )}
-
-        {/* Borrows Tab */}
-        {step === 'borrows' && (
-          <BorrowsTab
-            borrows={borrows}
-            onReturnItem={returnItemHandler}
-            currentMode={currentMode}
           />
         )}
 
