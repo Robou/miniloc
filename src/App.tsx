@@ -14,6 +14,7 @@ import BorrowFormTab from './components/BorrowFormTab';
 import BorrowsTab from './components/BorrowsTab';
 import LoginTab from './components/LoginTab';
 import AdminTab from './components/AdminTab';
+import Header from './components/ui/Header';
 import Footer from './components/ui/Footer';
 
 export default function App() {
@@ -106,16 +107,7 @@ export default function App() {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 max-w-6xl pb-12">
         {/* Header */}
-        <div className="app-header text-center">
-          <h1 className="text-4xl font-bold mb-2">
-            <i className={`${currentConfig.icon} mr-3`}></i>
-            CAF Avignon - {currentConfig.name}
-          </h1>
-          <p className="lead text-lg text-gray-600">
-            Consultez et empruntez{' '}
-            {currentMode === 'articles' ? 'le matériel de montagne' : 'les livres'} du club
-          </p>
-        </div>
+        <Header currentMode={currentMode} />
 
         {/* Mode Selector */}
         <div className="flex flex-col items-center mb-6">
