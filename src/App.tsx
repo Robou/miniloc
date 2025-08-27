@@ -58,12 +58,7 @@ export default function App() {
         *,
         ${currentMode === 'articles' ? 'equipment' : 'book'}:${itemTable}(*)
       `);
-    if (!error && data) {
-      console.log('Fetched borrows data:', data);
-      setBorrows(data);
-    } else {
-      console.error('Error fetching borrows:', error);
-    }
+    if (!error && data) setBorrows(data);
   }, [currentConfig.borrowTableName, currentMode]);
 
   useEffect(() => {
