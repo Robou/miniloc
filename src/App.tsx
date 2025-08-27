@@ -14,6 +14,7 @@ import BorrowFormTab from './components/BorrowFormTab';
 import BorrowsTab from './components/BorrowsTab';
 import LoginTab from './components/LoginTab';
 import AdminTab from './components/AdminTab';
+import Footer from './components/ui/Footer';
 
 export default function App() {
   const newLocal = useState<AppMode>('articles');
@@ -260,15 +261,9 @@ export default function App() {
             currentConfigName={currentConfig.name}
           />
         )}
-
-        {/* Footer */}
       </div>
-      <footer className="py-6 bg-gray-800 text-white text-center w-full">
-        <p>
-          <i className="fas fa-mountain mr-2"></i>
-          Club Alpin Français - Section d'Avignon et Vaucluse
-        </p>
-      </footer>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
