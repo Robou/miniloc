@@ -16,6 +16,7 @@ import LoginTab from './components/LoginTab';
 import AdminTab from './components/AdminTab';
 import Header from './components/ui/Header';
 import Footer from './components/ui/Footer';
+import ModeSelector from './components/ui/ModeSelector';
 
 export default function App() {
   const newLocal = useState<AppMode>('articles');
@@ -41,7 +42,6 @@ export default function App() {
 
   const currentConfig = MODE_CONFIGS[currentMode];
   const currentItems = currentMode === 'articles' ? articles : books;
-  const isModeLockedByCart = cart.length > 0;
 
   const fetchArticles = useCallback(async () => {
     const { data, error } = await supabase.from(currentConfig.tableName).select('*');
@@ -110,47 +110,13 @@ export default function App() {
         <Header currentMode={currentMode} />
 
         {/* Mode Selector */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="bg-white rounded-lg shadow-sm border p-1 flex">
-            {Object.entries(MODE_CONFIGS).map(([mode, config]) => (
-              <button
-                key={mode}
-                onClick={() => {
-                  if (isModeLockedByCart && mode !== currentMode) {
-                    setShowModeLockedToast(true);
-                    setTimeout(() => setShowModeLockedToast(false), 3000);
-                  } else {
-                    setCurrentMode(mode as AppMode);
-                  }
-                }}
-                disabled={isModeLockedByCart && mode !== currentMode}
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  currentMode === mode
-                    ? 'bg-blue-500 text-white'
-                    : isModeLockedByCart && mode !== currentMode
-                      ? 'text-gray-400 cursor-not-allowed bg-gray-50'
-                      : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <i className={`${config.icon} mr-2`}></i>
-                {config.name}
-              </button>
-            ))}
-          </div>
-
-          {/* Toast de verrouillage du mode */}
-          {showModeLockedToast && (
-            <div className="mt-3 bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 rounded-lg shadow-sm animate-pulse">
-              <div className="flex items-center">
-                <i className="fas fa-lock mr-2"></i>
-                <span className="text-sm">
-                  Impossible de changer de mode : videz d'abord votre panier pour éviter de mélanger
-                  les emprunts
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
+        <ModeSelector
+          currentMode={currentMode}
+          cart={cart}
+          setCurrentMode={setCurrentMode}
+          showModeLockedToast={showModeLockedToast}
+          setShowModeLockedToast={setShowModeLockedToast}
+        />
 
         {/* Navigation Tabs */}
         <NavTabs
@@ -185,7 +151,6 @@ export default function App() {
               onClick: () => setStep('login'),
             },
           ]}
-          //currentStep={step}
         />
 
         {/* Catalogue Tab */}
@@ -254,106 +219,9 @@ export default function App() {
           />
         )}
       </div>
+
       {/* Footer */}
       <Footer />
     </div>
   );
 }
-
-/* function AddItemForm({
-  onAdd,
-  currentMode,
-}: {
-  onAdd: (itemData: Partial<Article | Book>) => void;
-  currentMode: AppMode;
-}) {
-  const [formData, setFormData] = useState<Record<string, string>>({});
-
-  const handleSubmit = () => {
-    if (currentMode === 'articles') {
-      if (formData.designation) {
-        onAdd(formData);
-        setFormData({});
-      }
-    } else {
-      if (formData.title) {
-        onAdd(formData);
-        setFormData({});
-      }
-    }
-  };
-
-  const isValid = currentMode === 'articles' ? !!formData.designation : !!formData.title;
-
-  return (
-    <div className="card">
-      <div className="card-header">
-        <h3 className="text-lg font-semibold">
-          <i className="fas fa-plus-circle mr-2"></i>
-          Ajouter un nouveau {currentMode === 'articles' ? 'matériel' : 'livre'}
-        </h3>
-      </div>
-      <div className="card-body">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {currentMode === 'articles' ? (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Désignation *
-                </label>
-                <Input
-                  placeholder="Ex: Casque Petzl Boreo"
-                  value={formData.designation || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, designation: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                <Input
-                  placeholder="Ex: casque, corde, baudrier..."
-                  value={formData.type || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, type: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Titre *</label>
-                <Input
-                  placeholder="Titre du livre"
-                  value={formData.title || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Auteur</label>
-                <Input
-                  placeholder="Nom de l'auteur"
-                  value={formData.author || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, author: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-            </>
-          )}
-        </div>
-        <Button onClick={handleSubmit} disabled={!isValid} className="mt-4 btn-primary">
-          <i className="fas fa-plus-circle mr-2"></i>
-          Ajouter {currentMode === 'articles' ? 'le matériel' : 'le livre'}
-        </Button>
-      </div>
-    </div>
-  );
-} */
