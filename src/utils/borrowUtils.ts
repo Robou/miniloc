@@ -1,5 +1,7 @@
 import supabase from '../lib/supabase';
 import { Article, Book, AppMode, MODE_CONFIGS } from '../types/AppMode';
+import toast from 'react-hot-toast';
+import { confirmation } from '../components/ui/Confirm';
 
 interface BorrowerInfo {
   name: string;
@@ -44,6 +46,7 @@ export const confirmBorrow = async (
 
     if (error) {
       errors.push(`Erreur technique pour ${itemName}: ${error.message}`);
+      toast.error(`Erreur technique pour ${itemName}: ${error.message}`);
       continue;
     }
 
@@ -54,13 +57,13 @@ export const confirmBorrow = async (
   }
 
   if (errors.length > 0) {
-    alert(
+    toast.error(
       `Erreurs lors de l'emprunt:\n${errors.join('\n')}\n\nVeuillez corriger les informations et réessayer.`
     );
     return;
   }
 
-  alert('Emprunt réalisé avec succès !');
+  toast.success('Emprunt réalisé avec succès !');
   await fetchArticles();
   await fetchBorrows();
 };
@@ -74,25 +77,34 @@ export const returnItem = async (
   const currentConfig = MODE_CONFIGS[currentMode];
   const itemType = currentMode === 'articles' ? 'article' : 'livre';
 
-  if (!confirm(`Êtes-vous sûr de vouloir retourner cet ${itemType} ?`)) {
+  const result = await confirmation({
+    message: 'Êtes-vous sûr de vouloir retourner cet ${itemType} ?',
+  });
+
+  if (!result) {
+    // User confirmed - proceed with deletion
     return;
   }
+
+  // if (!confirm(`Êtes-vous sûr de vouloir retourner cet ${itemType} ?`)) {
+  //   return;
+  // }
 
   const { data, error } = await supabase.rpc(currentConfig.returnFunction, {
     p_borrow_id: borrowId,
   });
 
   if (error) {
-    alert(`Erreur technique lors du retour: ${error.message}`);
+    toast.error(`Erreur technique lors du retour: ${error.message}`);
     return;
   }
 
   if (!data.success) {
-    alert(`Erreur lors du retour: ${data.error}`);
+    toast.error(`Erreur lors du retour: ${data.error}`);
     return;
   }
 
-  alert(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} retourné avec succès !`);
+  toast.success(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} retourné avec succès !`);
   await fetchArticles();
   await fetchBorrows();
 };

@@ -1,6 +1,7 @@
 import { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useState } from 'react';
 import supabase from './lib/supabase';
+
 import { addToCart, clearCart, removeFromCart } from './utils/cartUtils';
 import { confirmBorrow, returnItem } from './utils/borrowUtils';
 import { handleLogin } from './utils/authUtils';
@@ -17,6 +18,8 @@ import AdminTab from './components/AdminTab';
 import Header from './components/ui/Header';
 import Footer from './components/ui/Footer';
 import ModeSelector from './components/ui/ModeSelector';
+
+import { Toaster } from 'react-hot-toast';
 
 export default function App() {
   const newLocal = useState<AppMode>('articles');
@@ -222,6 +225,9 @@ export default function App() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Ne pas supprimer */}
+      <Toaster />
     </div>
   );
 }
