@@ -11,17 +11,15 @@ interface NavTab {
 
 interface NavTabsProps {
   tabs: NavTab[];
-  //currentStep: string;
 }
 
 const NavTabs: React.FC<NavTabsProps> = ({ tabs }) => {
-  // = ({ tabs, currentStep }) => {
   return (
     <div className="nav-tabs flex flex-wrap mb-6">
       {tabs.map((tab) => (
         <button
           key={tab.id}
-          className={`nav-tab ${tab.isActive ? 'active' : ''}`}
+          className={`nav-tab ${tab.isActive ? 'active' : ''} ${tab.label === 'Admin' ? 'ml-auto' : ''}`}
           onClick={tab.onClick}
         >
           <i className={`${tab.icon} mr-2`}></i>

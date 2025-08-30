@@ -78,7 +78,7 @@ export const returnItem = async (
   const itemType = currentMode === 'articles' ? 'article' : 'livre';
 
   const result = await confirmation({
-    message: 'Êtes-vous sûr de vouloir retourner cet ${itemType} ?',
+    message: 'Êtes-vous sûr de vouloir retourner cet article ?',
   });
 
   if (!result) {
