@@ -1,6 +1,6 @@
 import React from 'react';
 import { Article, Book } from '../types/AppMode';
-import AddItemForm from './ItemForm';
+import ItemForm from './ItemForm';
 
 interface AdminTabProps {
   items: (Article | Book)[];
@@ -25,7 +25,7 @@ const AdminTab: React.FC<AdminTabProps> = ({
           </h2>
         </div>
         <div className="card-body">
-          <AddItemForm onAdd={onAddItem} currentMode={currentMode} />
+          <ItemForm onAdd={onAddItem} currentMode={currentMode} />
 
           <div className="mt-8">
             <h3 className="text-lg font-semibold mb-4">{currentConfigName} existants</h3>
