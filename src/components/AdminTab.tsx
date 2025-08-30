@@ -1,6 +1,6 @@
 import React from 'react';
 import { Article, Book } from '../types/AppMode';
-import AddItemForm from './AddItemForm';
+import AddItemForm from './ItemForm';
 
 interface AdminTabProps {
   items: (Article | Book)[];
