@@ -1,6 +1,7 @@
 import React from 'react';
 import { Article, Book } from '../types/AppMode';
-import ItemForm from './ItemForm';
+//import ItemForm from './ItemForm';
+import AdaptiveItemForm from './ItemForm';
 
 interface AdminTabProps {
   items: (Article | Book)[];
@@ -9,12 +10,56 @@ interface AdminTabProps {
   currentConfigName: string;
 }
 
+/* */
+/* TEST */
+/* */
+
+//const [itemType, setItemType] = React.useState('product');
+
+// const handleFormSubmit = (data) => {
+//   console.log('Données soumises:', { type: itemType, ...data });
+//   alert(`${itemType} créé avec succès !`);
+//   // Ici vous pouvez faire l'appel API
+// };
+
+// return (
+//   <div className="p-8">
+//     <div className="mb-6 text-center">
+//       <button
+//         onClick={() => setItemType('product')}
+//         className={`mr-4 px-4 py-2 rounded ${
+//           itemType === 'product' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+//         }`}
+//       >
+//         Produit
+//       </button>
+//       <button
+//         onClick={() => setItemType('service')}
+//         className={`px-4 py-2 rounded ${
+//           itemType === 'service' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+//         }`}
+//       >
+//         Service
+//       </button>
+//     </div>
+
+//     <AdaptiveItemForm itemType={itemType} onSubmit={handleFormSubmit} />
+//   </div>
+// );
+
+/* */
+/* FIN TEST */
+/* */
+
 const AdminTab: React.FC<AdminTabProps> = ({
   items,
   onAddItem,
   currentMode,
   currentConfigName,
 }) => {
+  const handleFormSubmit = (itemData: Partial<Article | Book>) => {
+    onAddItem(itemData);
+  };
   return (
     <div className="fade-in">
       <div className="card">
@@ -25,7 +70,8 @@ const AdminTab: React.FC<AdminTabProps> = ({
           </h2>
         </div>
         <div className="card-body">
-          <ItemForm onAdd={onAddItem} currentMode={currentMode} />
+          {/* <ItemForm onAdd={onAddItem} currentMode={currentMode} /> */}
+          <AdaptiveItemForm currentMode={currentMode} onSubmit={handleFormSubmit} />
 
           <div className="mt-8">
             <h3 className="text-lg font-semibold mb-4">{currentConfigName} existants</h3>

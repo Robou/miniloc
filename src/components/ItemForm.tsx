@@ -1,311 +1,252 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Article, Book, AppMode } from '../types/AppMode';
-import { Button } from './ui/Button';
-import { Input } from './ui/Input';
+import { useForm } from 'react-hook-form';
 
-interface AddItemFormProps {
-  onAdd: (itemData: Partial<Article | Book>) => void;
+interface AdaptiveItemFormProps {
+  onSubmit: (itemData: Partial<Article | Book>) => void;
   currentMode: AppMode;
+  initialData?: Partial<Article | Book>;
 }
 
-const AddItemForm: React.FC<AddItemFormProps> = ({ onAdd, currentMode }) => {
-  const [formData, setFormData] = useState<Record<string, string>>({});
+interface FieldConfig {
+  name: string;
+  label: string;
+  type: 'text' | 'textarea' | 'select' | 'number' | 'checkbox';
+  required: boolean;
+  options?: string[];
+}
 
-  const handleSubmit = () => {
-    if (currentMode === 'articles') {
-      if (formData.designation) {
-        onAdd(formData);
-        setFormData({});
-      }
-    } else {
-      if (formData.title) {
-        onAdd(formData);
-        setFormData({});
-      }
+const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
+  currentMode,
+  onSubmit,
+  initialData = {},
+}) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: { available: true, ...initialData },
+  });
+
+  // Configuration des champs selon le type
+  const getFieldConfig = (mode: 'articles' | 'books'): FieldConfig[] => {
+    const configs = {
+      books: [
+        { name: 'title', label: 'Titre', type: 'text' as const, required: true },
+        { name: 'author', label: 'Auteur', type: 'text' as const, required: false },
+        {
+          name: 'category',
+          label: 'Catégorie',
+          type: 'select' as const,
+          options: [
+            'carte topographique',
+            'topo randonnée',
+            'topo escalade',
+            'topo alpinisme',
+            'manuel technique',
+            'beau livre',
+            'roman',
+          ],
+          required: false,
+        },
+        { name: 'publisher', label: 'Éditeur', type: 'text' as const, required: false },
+        {
+          name: 'publication_year',
+          label: 'Année de publication',
+          type: 'number' as const,
+          required: false,
+        },
+        { name: 'isbn', label: 'ISBN', type: 'text' as const, required: false },
+        { name: 'description', label: 'Description', type: 'textarea' as const, required: false },
+        { name: 'keywords', label: 'Mots-clés', type: 'text' as const, required: false },
+        {
+          name: 'type',
+          label: 'Type',
+          type: 'select' as const,
+          options: ['livre', 'carte topographique'],
+          required: false,
+        },
+        {
+          name: 'storage_location',
+          label: 'Lieu de stockage',
+          type: 'text' as const,
+          required: false,
+        },
+      ],
+      articles: [
+        { name: 'designation', label: 'Désignation', type: 'text' as const, required: true },
+        {
+          name: 'type',
+          label: 'Type',
+          type: 'select' as const,
+          options: ['Corde', 'Mousqueton', 'Casque', 'Baudrier', 'Chaussures', 'Autre'],
+          required: false,
+        },
+        { name: 'manufacturer', label: 'Fabricant', type: 'text' as const, required: false },
+        { name: 'model', label: 'Modèle', type: 'text' as const, required: false },
+        { name: 'size', label: 'Taille', type: 'text' as const, required: false },
+        { name: 'color', label: 'Couleur', type: 'text' as const, required: false },
+        { name: 'manufacturer_id', label: 'ID Fabricant', type: 'text' as const, required: false },
+        { name: 'club_id', label: 'ID Club', type: 'text' as const, required: false },
+        {
+          name: 'manufacturing_date',
+          label: 'Date de fabrication',
+          type: 'text' as const,
+          required: false,
+        },
+        {
+          name: 'operational_status',
+          label: 'État opérationnel',
+          type: 'select' as const,
+          options: ['excellent', 'bon', 'acceptable', 'hors_service'],
+          required: false,
+        },
+        {
+          name: 'usage_notes',
+          label: "Notes d'utilisation",
+          type: 'textarea' as const,
+          required: false,
+        },
+        {
+          name: 'is_epi',
+          label: 'EPI (Équipement de Protection Individuelle)',
+          type: 'checkbox' as const,
+          required: false,
+        },
+      ],
+    };
+    return configs[mode];
+  };
+
+  const fields = getFieldConfig(currentMode);
+
+  // Reset form when itemType changes
+  useEffect(() => {
+    reset({});
+  }, [currentMode, reset]);
+
+  const renderField = (field: FieldConfig) => {
+    const baseProps = {
+      ...register(field.name, { required: field.required }),
+    };
+
+    switch (field.type) {
+      case 'textarea':
+        return (
+          <textarea
+            {...baseProps}
+            className="w-full p-2 border rounded focus:border-blue-500 focus:outline-none"
+            rows={3}
+            placeholder={field.label}
+          />
+        );
+
+      case 'select':
+        return (
+          <select {...baseProps} className="w-full p-2 border rounded">
+            <option value="">Sélectionner {field.label}</option>
+            {field.options?.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        );
+
+      case 'number':
+        return (
+          <input
+            {...baseProps}
+            type="number"
+            className="w-full p-2 border rounded"
+            placeholder={field.label}
+          />
+        );
+
+      case 'checkbox':
+        return (
+          <input
+            {...baseProps}
+            type="checkbox"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+        );
+
+      default:
+        return (
+          <input
+            {...baseProps}
+            type="text"
+            className="w-full p-2 border rounded"
+            placeholder={field.label}
+          />
+        );
     }
   };
 
-  const isValid = currentMode === 'articles' ? !!formData.designation : !!formData.title;
+  const handleFormSubmit = (data: any) => {
+    // Nettoyer les données : supprimer les champs vides
+    const cleanedData = Object.entries(data).reduce((acc, [key, value]) => {
+      if (value !== '' && value !== null && value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as any);
+
+    // Ajouter les champs requis
+    const itemData = {
+      ...cleanedData,
+      available: data.available || true,
+      created_at: new Date().toISOString(),
+    };
+
+    onSubmit(itemData);
+    reset({ available: true }); // Reset avec available à true par défaut
+  };
 
   return (
     <div className="card">
       <div className="card-header">
         <h3 className="text-lg font-semibold">
-          <i className="fas fa-plus-circle mr-2"></i>
-          Ajouter un nouveau {currentMode === 'articles' ? 'matériel' : 'livre'}
+          <i className="fas fa-plus mr-2"></i>
+          Ajouter {currentMode === 'books' ? 'un livre' : 'un article'}
         </h3>
       </div>
+
       <div className="card-body">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {currentMode === 'articles' ? (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Désignation *
-                </label>
-                <Input
-                  placeholder="Ex: Casque Petzl Boreo"
-                  value={formData.designation || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, designation: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                <Input
-                  placeholder="Ex: casque, corde, baudrier..."
-                  value={formData.type || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, type: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Couleur</label>
-                <Input
-                  placeholder="Ex: rouge, bleu..."
-                  value={formData.color || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, color: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Fabricant</label>
-                <Input
-                  placeholder="Ex: Petzl, Black Diamond..."
-                  value={formData.manufacturer || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, manufacturer: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Modèle</label>
-                <Input
-                  placeholder="Ex: Boreo, Momentum..."
-                  value={formData.model || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, model: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Taille</label>
-                <Input
-                  placeholder="Ex: M, L, XL..."
-                  value={formData.size || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, size: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ID Fabricant</label>
-                <Input
-                  placeholder="Ex: PETZL001, BD002..."
-                  value={formData.manufacturer_id || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, manufacturer_id: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ID Club</label>
-                <Input
-                  placeholder="Ex: CLUB001, CLUB002..."
-                  value={formData.club_id || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, club_id: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date de Fabrication
-                </label>
-                <Input
-                  placeholder="Ex: 2023-01-01"
-                  value={formData.manufacturing_date || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, manufacturing_date: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Statut Opérationnel
-                </label>
-                <Input
-                  placeholder="Ex: neuf, utilisé, en réparation..."
-                  value={formData.operational_status || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, operational_status: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Notes d'Utilisation
-                </label>
-                <Input
-                  placeholder="Ex: Utilisé pour l'escalade en falaise..."
-                  value={formData.usage_notes || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, usage_notes: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">EPI</label>
-                <Input
-                  placeholder="Ex: true, false"
-                  value={formData.is_epi || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, is_epi: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Titre *</label>
-                <Input
-                  placeholder="Titre du livre"
-                  value={formData.title || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Auteur</label>
-                <Input
-                  placeholder="Nom de l'auteur"
-                  value={formData.author || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, author: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
-                <Input
-                  placeholder="Ex: Roman, Science-Fiction, Histoire..."
-                  value={formData.category || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Éditeur</label>
-                <Input
-                  placeholder="Ex: Gallimard, Flammarion..."
-                  value={formData.publisher || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, publisher: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Année de Publication
-                </label>
-                <Input
-                  placeholder="Ex: 2023"
-                  value={formData.publication_year || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, publication_year: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <Input
-                  placeholder="Ex: Un livre sur l'histoire de l'alpinisme..."
-                  value={formData.description || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Mots-clés</label>
-                <Input
-                  placeholder="Ex: alpinisme, montagne, escalade..."
-                  value={formData.keywords || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, keywords: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ISBN</label>
-                <Input
-                  placeholder="Ex: 978-3-16-148410-0"
-                  value={formData.isbn || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, isbn: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                <Input
-                  placeholder="Ex: Livre, Magazine, Revue..."
-                  value={formData.type || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, type: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Emplacement de Stockage
-                </label>
-                <Input
-                  placeholder="Ex: Étagère A, Rayon B..."
-                  value={formData.storage_location || ''}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setFormData({ ...formData, storage_location: e.target.value })
-                  }
-                  className="form-control"
-                />
-              </div>
-            </>
-          )}
+          {fields.map((field) => (
+            <div
+              key={field.name}
+              className={`${field.type === 'checkbox' ? 'flex items-center space-x-2 col-span-full' : field.type === 'textarea' ? 'col-span-full' : ''}`}
+            >
+              <label
+                className={`block text-sm font-medium ${field.type === 'checkbox' ? 'order-2' : 'mb-1'}`}
+              >
+                {field.label}
+                {field.required && <span className="text-red-500 ml-1">*</span>}
+              </label>
+              {renderField(field)}
+              {errors[field.name] && (
+                <p className="text-red-500 text-sm mt-1">Ce champ est requis</p>
+              )}
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={handleSubmit(handleFormSubmit)}
+            className="btn btn-primary col-span-full mt-4"
+          >
+            <i className="fas fa-plus mr-2"></i>
+            Ajouter {currentMode === 'books' ? 'le livre' : "l'article"}
+          </button>
         </div>
-        <Button onClick={handleSubmit} disabled={!isValid} className="mt-4 btn-primary">
-          <i className="fas fa-plus-circle mr-2"></i>
-          Ajouter {currentMode === 'articles' ? 'le matériel' : 'le livre'}
-        </Button>
       </div>
     </div>
   );
 };
 
-export default AddItemForm;
+export default AdaptiveItemForm;

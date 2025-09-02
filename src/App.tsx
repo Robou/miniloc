@@ -5,7 +5,8 @@ import supabase from './lib/supabase';
 import { addToCart, clearCart, removeFromCart } from './utils/cartUtils';
 import { confirmBorrow, returnItem } from './utils/borrowUtils';
 import { handleLogin } from './utils/authUtils';
-import { addItem } from './utils/itemUtils';
+import { addItemToDB } from './utils/itemUtils';
+//import { editItemToDB } from './utils/itemUtils';
 
 import { AppMode, Article, Book, BookBorrow, ArticleBorrow, MODE_CONFIGS } from './types/AppMode';
 import NavTabs from './components/ui/NavTabs';
@@ -103,7 +104,7 @@ export default function App() {
   };
 
   const addItemHandler = async (itemData: Partial<Article | Book>) => {
-    await addItem(itemData, currentMode, fetchArticles);
+    await addItemToDB(itemData, currentMode, fetchArticles);
   };
 
   return (
