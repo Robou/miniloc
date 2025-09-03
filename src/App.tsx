@@ -5,8 +5,7 @@ import supabase from './lib/supabase';
 import { addToCart, clearCart, removeFromCart } from './utils/cartUtils';
 import { confirmBorrow, returnItem } from './utils/borrowUtils';
 import { handleLogin } from './utils/authUtils';
-import { addItemToDB } from './utils/itemUtils';
-//import { editItemToDB } from './utils/itemUtils';
+import { addItemToDB, editItemToDB } from './utils/itemUtils';
 
 import { AppMode, Article, Book, BookBorrow, ArticleBorrow, MODE_CONFIGS } from './types/AppMode';
 import NavTabs from './components/ui/NavTabs';
@@ -105,6 +104,10 @@ export default function App() {
 
   const addItemHandler = async (itemData: Partial<Article | Book>) => {
     await addItemToDB(itemData, currentMode, fetchArticles);
+  };
+
+  const editItemHandler = async (itemData: Partial<Article | Book>) => {
+    await editItemToDB(itemData, currentMode, fetchArticles);
   };
 
   return (
@@ -218,6 +221,7 @@ export default function App() {
           <AdminTab
             items={currentItems}
             onAddItem={addItemHandler}
+            onEditItem={editItemHandler}
             currentMode={currentMode}
             currentConfigName={currentConfig.name}
           />

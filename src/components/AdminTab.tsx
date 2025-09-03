@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Article, Book } from '../types/AppMode';
 //import ItemForm from './ItemForm';
 import AdaptiveItemForm from './ItemForm';
@@ -6,6 +6,7 @@ import AdaptiveItemForm from './ItemForm';
 interface AdminTabProps {
   items: (Article | Book)[];
   onAddItem: (itemData: Partial<Article | Book>) => void;
+  onEditItem: (itemData: Partial<Article | Book>) => void;
   currentMode: 'articles' | 'books';
   currentConfigName: string;
 }
@@ -54,11 +55,19 @@ interface AdminTabProps {
 const AdminTab: React.FC<AdminTabProps> = ({
   items,
   onAddItem,
+  onEditItem,
   currentMode,
   currentConfigName,
 }) => {
+  const [editingItem, setEditingItem] = useState<Article | Book | null>(null);
+
   const handleFormSubmit = (itemData: Partial<Article | Book>) => {
-    onAddItem(itemData);
+    if (editingItem) {
+      onEditItem(itemData);
+      setEditingItem(null);
+    } else {
+      onAddItem(itemData);
+    }
   };
   return (
     <div className="fade-in">
@@ -71,7 +80,11 @@ const AdminTab: React.FC<AdminTabProps> = ({
         </div>
         <div className="card-body">
           {/* <ItemForm onAdd={onAddItem} currentMode={currentMode} /> */}
-          <AdaptiveItemForm currentMode={currentMode} onSubmit={handleFormSubmit} />
+          <AdaptiveItemForm
+            currentMode={currentMode}
+            onSubmit={handleFormSubmit}
+            initialData={editingItem || {}}
+          />
 
           <div className="mt-8">
             <h3 className="text-lg font-semibold mb-4">{currentConfigName} existants</h3>
@@ -105,6 +118,13 @@ const AdminTab: React.FC<AdminTabProps> = ({
                         Emprunté
                       </span>
                     )}
+                    <button
+                      onClick={() => setEditingItem(item)}
+                      className="btn btn-secondary btn-sm"
+                    >
+                      <i className="fas fa-edit mr-1"></i>
+                      Éditer
+                    </button>
                   </div>
                 </div>
               ))}

@@ -21,15 +21,27 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
   onSubmit,
   initialData = {},
 }) => {
+  const isEdit = !!initialData.id;
+
+  // Process initialData for display
+  const processedInitialData = React.useMemo(() => {
+    const data = { ...initialData };
+    if (currentMode === 'articles' && (data as any).manufacturing_date) {
+      const date = new Date((data as any).manufacturing_date);
+      (data as any).manufacturing_date =
+        `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+    }
+    return data;
+  }, [initialData, currentMode]);
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<any>({
-    defaultValues: { available: true, ...initialData },
+    defaultValues: { available: true, ...processedInitialData },
   });
-
   // Configuration des champs selon le type
   const getFieldConfig = (mode: 'articles' | 'books'): FieldConfig[] => {
     const configs = {
@@ -122,10 +134,10 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
 
   const fields = getFieldConfig(currentMode);
 
-  // Reset form when itemType changes
+  // Reset form when mode or initialData changes
   useEffect(() => {
-    reset({});
-  }, [currentMode, reset]);
+    reset({ available: true, ...processedInitialData });
+  }, [processedInitialData, reset]);
 
   const renderField = (field: FieldConfig) => {
     const validationRules: any = { required: field.required };
@@ -236,7 +248,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
     await onSubmit(itemData);
     // Reset all fields to empty values
     const emptyValues = Object.fromEntries(
-      fields.map(f => [f.name, f.type === 'checkbox' ? false : ''])
+      fields.map((f) => [f.name, f.type === 'checkbox' ? false : ''])
     );
     reset({ available: true, ...emptyValues });
   };
@@ -245,8 +257,8 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
     <div className="card">
       <div className="card-header">
         <h3 className="text-lg font-semibold">
-          <i className="fas fa-plus mr-2"></i>
-          Ajouter {currentMode === 'books' ? 'un livre' : 'un article'}
+          <i className={`fas fa-${isEdit ? 'edit' : 'plus'} mr-2`}></i>
+          {isEdit ? 'Modifier' : 'Ajouter'} {currentMode === 'books' ? 'un livre' : 'un article'}
         </h3>
       </div>
 
@@ -280,8 +292,8 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           >
             <i className="fas fa-plus mr-2"></i>
             {isSubmitting
-              ? 'Ajout en cours...'
-              : `Ajouter ${currentMode === 'books' ? 'le livre' : "l'article"}`}
+              ? `${isEdit ? 'Modification' : 'Ajout'} en cours...`
+              : `${isEdit ? 'Modifier' : 'Ajouter'} ${currentMode === 'books' ? 'le livre' : "l'article"}`}
           </button>
         </div>
       </div>

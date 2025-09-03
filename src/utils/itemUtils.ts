@@ -24,12 +24,21 @@ export const addItemToDB = async (
   toast.success('Élément ajouté avec succès !');
 };
 
-// export const editItemToDB = async (
-//   itemData: Partial<Article | Book>,
-//   currentMode: AppMode,
-//   fetchArticles: () => Promise<void>
-// ): Promise<void> => {
-//   const currentConfig = MODE_CONFIGS[currentMode];
-//   const { error } = await supabase.from(currentConfig.tableName).update(itemData);
-//   if (!error) await fetchArticles();
-// };
+export const editItemToDB = async (
+  itemData: Partial<Article | Book>,
+  currentMode: AppMode,
+  fetchArticles: () => Promise<void>
+): Promise<void> => {
+  const currentConfig = MODE_CONFIGS[currentMode];
+  const { id, ...updateData } = itemData;
+  const { error } = await supabase.from(currentConfig.tableName).update(updateData).eq('id', id);
+
+  if (error) {
+    console.error('Erreur lors de la modification:', error);
+    toast.error('Erreur lors de la modification: ' + error.message);
+    return;
+  }
+
+  await fetchArticles();
+  toast.success('Élément modifié avec succès !');
+};
