@@ -11,7 +11,7 @@ interface AdaptiveItemFormProps {
 interface FieldConfig {
   name: string;
   label: string;
-  type: 'text' | 'textarea' | 'select' | 'number' | 'checkbox';
+  type: 'text' | 'textarea' | 'select' | 'number' | 'checkbox' | 'date';
   required: boolean;
   options?: string[];
 }
@@ -25,8 +25,8 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
-  } = useForm({
+    formState: { errors, isSubmitting },
+  } = useForm<any>({
     defaultValues: { available: true, ...initialData },
   });
 
@@ -92,7 +92,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
         { name: 'club_id', label: 'ID Club', type: 'text' as const, required: false },
         {
           name: 'manufacturing_date',
-          label: 'Date de fabrication',
+          label: 'Date de fabrication (MM/YYYY)',
           type: 'text' as const,
           required: false,
         },
@@ -128,8 +128,15 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
   }, [currentMode, reset]);
 
   const renderField = (field: FieldConfig) => {
+    const validationRules: any = { required: field.required };
+    if (field.name === 'manufacturing_date') {
+      validationRules.pattern = {
+        value: /^\d{2}\/\d{4}$/,
+        message: 'Format attendu: MM/YYYY (ex: 12/2023)',
+      };
+    }
     const baseProps = {
-      ...register(field.name, { required: field.required }),
+      ...register(field.name, validationRules),
     };
 
     switch (field.type) {
@@ -146,7 +153,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
       case 'select':
         return (
           <select {...baseProps} className="w-full p-2 border rounded">
-            <option value="">Sélectionner {field.label}</option>
+            {!field.required && <option value="">Sélectionner {field.label}</option>}
             {field.options?.map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -160,6 +167,16 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           <input
             {...baseProps}
             type="number"
+            className="w-full p-2 border rounded"
+            placeholder={field.label}
+          />
+        );
+
+      case 'date':
+        return (
+          <input
+            {...baseProps}
+            type="date"
             className="w-full p-2 border rounded"
             placeholder={field.label}
           />
@@ -186,11 +203,25 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
     }
   };
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = async (data: any) => {
     // Nettoyer les données : supprimer les champs vides
     const cleanedData = Object.entries(data).reduce((acc, [key, value]) => {
       if (value !== '' && value !== null && value !== undefined) {
-        acc[key] = value;
+        // Convertir les nombres
+        if (key === 'publication_year' && typeof value === 'string') {
+          acc[key] = parseInt(value, 10);
+        } else if (key === 'manufacturing_date' && typeof value === 'string') {
+          // Convertir MM/YYYY en date (premier jour du mois)
+          const [month, year] = value.split('/');
+          if (month && year) {
+            const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1, 1);
+            acc[key] = date.toISOString().split('T')[0]; // YYYY-MM-DD
+          } else {
+            acc[key] = value; // Si format invalide, garder tel quel
+          }
+        } else {
+          acc[key] = value;
+        }
       }
       return acc;
     }, {} as any);
@@ -202,8 +233,12 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
       created_at: new Date().toISOString(),
     };
 
-    onSubmit(itemData);
-    reset({ available: true }); // Reset avec available à true par défaut
+    await onSubmit(itemData);
+    // Reset all fields to empty values
+    const emptyValues = Object.fromEntries(
+      fields.map(f => [f.name, f.type === 'checkbox' ? false : ''])
+    );
+    reset({ available: true, ...emptyValues });
   };
 
   return (
@@ -229,8 +264,10 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
                 {field.required && <span className="text-red-500 ml-1">*</span>}
               </label>
               {renderField(field)}
-              {errors[field.name] && (
-                <p className="text-red-500 text-sm mt-1">Ce champ est requis</p>
+              {(errors as any)[field.name] && (
+                <p className="text-red-500 text-sm mt-1">
+                  {(errors as any)[field.name]?.message || 'Ce champ est requis'}
+                </p>
               )}
             </div>
           ))}
@@ -238,10 +275,13 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           <button
             type="button"
             onClick={handleSubmit(handleFormSubmit)}
-            className="btn btn-primary col-span-full mt-4"
+            disabled={isSubmitting}
+            className="btn btn-primary col-span-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <i className="fas fa-plus mr-2"></i>
-            Ajouter {currentMode === 'books' ? 'le livre' : "l'article"}
+            {isSubmitting
+              ? 'Ajout en cours...'
+              : `Ajouter ${currentMode === 'books' ? 'le livre' : "l'article"}`}
           </button>
         </div>
       </div>
