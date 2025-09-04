@@ -1,6 +1,8 @@
 import React from 'react';
-import { Input } from './Input.tsx';
-import { Button } from './Button.tsx';
+//import { Input } from './Input.tsx';
+
+import { Button, TextInput } from 'flowbite-react';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 interface SearchBarProps {
   search: string;
@@ -14,17 +16,24 @@ const SearchBar: React.FC<SearchBarProps> = ({ search, onSearchChange, placehold
       <div className="flex flex-col md:flex-row gap-4 items-center">
         <div className="flex-1">
           <div className="relative">
-            <Input
+            {/* <Input
               placeholder={placeholder}
               value={search}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
               className="form-control pl-10"
+            /> */}
+            <TextInput
+              id="search1"
+              type="text"
+              placeholder={placeholder}
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
             />
-            <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
           </div>
         </div>
-        <Button className="btn-primary">
-          <i className="fas fa-search mr-2"></i>
+        <div></div>
+        <Button>
+          <FaMagnifyingGlass className="mr-2" />
           Rechercher
         </Button>
       </div>
