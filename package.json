@@ -10,7 +10,8 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "build:prod": "NODE_ENV=production npm run build",
     "test:build": "npm run build && npm run preview",
-    "deploy:check": "npm run lint && npm run build:prod"
+    "deploy:check": "npm run lint && npm run build:prod",
+    "postinstall": "flowbite-react register"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.50.0",
     "clsx": "^2.1.1",
+    "flowbite-react": "^0.12.8",
     "react": "^19.1.0",
     "react-confirm": "^0.4.0",
     "react-dom": "^19.1.0",
