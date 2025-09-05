@@ -57,6 +57,40 @@ export type ArticleBorrow = {
   equipment: Article;
 };
 
+// Types pour la recherche multicritères
+export type BookSearchCriteria = {
+  title?: string;
+  author?: string;
+  type?: 'livre' | 'carte topographique';
+  category?:
+    | 'carte topographique'
+    | 'topo randonnée'
+    | 'topo escalade'
+    | 'topo alpinisme'
+    | 'manuel technique'
+    | 'beau livre'
+    | 'roman';
+  publisher?: string;
+  publication_year?: number;
+  isbn?: string;
+  storage_location?: string;
+  keywords?: string;
+};
+
+export type ArticleSearchCriteria = {
+  designation?: string;
+  type?: string;
+  color?: string;
+  manufacturer?: string;
+  model?: string;
+  operational_status?: 'excellent' | 'bon' | 'acceptable' | 'hors_service';
+  manufacturer_id?: string;
+  club_id?: string;
+  is_epi?: boolean;
+};
+
+export type SearchCriteria = BookSearchCriteria | ArticleSearchCriteria;
+
 // Configuration des modes
 export type AppMode = 'articles' | 'books';
 type ModeConfig = {
