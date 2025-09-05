@@ -114,7 +114,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 max-w-6xl pb-12">
+      <div className="container mx-auto max-w-6xl px-4 pb-12">
         {/* Header */}
         <Header currentMode={currentMode} />
 

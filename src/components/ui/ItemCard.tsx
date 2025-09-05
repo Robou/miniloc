@@ -24,8 +24,8 @@ const ItemCard: React.FunctionComponent<ItemCardProps> = ({
   return (
     <div key={item.id} id={`item-${item.id}`} className={`card article-card ${typeClass} fade-in`}>
       <div className="card-body">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="font-bold text-lg text-gray-800 flex-1">{displayName}</h3>
+        <div className="mb-3 flex items-start justify-between">
+          <h3 className="flex-1 text-lg font-bold text-gray-800">{displayName}</h3>
           <div className="ml-2">
             {item.available ? (
               <span className="badge badge-success">

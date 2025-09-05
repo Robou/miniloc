@@ -15,7 +15,7 @@ interface NavTabsProps {
 
 const NavTabs: React.FC<NavTabsProps> = ({ tabs }) => {
   return (
-    <div className="nav-tabs flex flex-wrap mb-6">
+    <div className="nav-tabs mb-6 flex flex-wrap">
       {tabs.map((tab) => (
         <button
           key={tab.id}

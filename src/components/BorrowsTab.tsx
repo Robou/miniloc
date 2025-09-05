@@ -20,9 +20,9 @@ const BorrowsTab: React.FC<BorrowsTabProps> = ({ borrows, onReturnItem, currentM
         </div>
         <div className="card-body">
           {borrows.length === 0 ? (
-            <div className="text-center py-12">
-              <i className="fas fa-hand-holding text-6xl text-gray-300 mb-4"></i>
-              <p className="text-gray-500 text-lg">Aucun emprunt en cours</p>
+            <div className="py-12 text-center">
+              <i className="fas fa-hand-holding mb-4 text-6xl text-gray-300"></i>
+              <p className="text-lg text-gray-500">Aucun emprunt en cours</p>
             </div>
           ) : (
             <div className="grid gap-6">
@@ -30,8 +30,8 @@ const BorrowsTab: React.FC<BorrowsTabProps> = ({ borrows, onReturnItem, currentM
                 <div key={borrow.id} className="card">
                   <div className="card-body">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex-1 mb-4 sm:mb-0">
-                        <h4 className="font-bold text-lg text-gray-800">
+                      <div className="mb-4 flex-1 sm:mb-0">
+                        <h4 className="text-lg font-bold text-gray-800">
                           {currentMode === 'articles'
                             ? (borrow as ArticleBorrow).equipment?.designation ||
                               `Article ID: ${(borrow as ArticleBorrow).equipment_id}`

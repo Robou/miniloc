@@ -156,7 +156,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
         return (
           <textarea
             {...baseProps}
-            className="w-full p-2 border rounded focus:border-blue-500 focus:outline-none"
+            className="w-full rounded border p-2 focus:border-blue-500 focus:outline-none"
             rows={3}
             placeholder={field.label}
           />
@@ -164,7 +164,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
 
       case 'select':
         return (
-          <select {...baseProps} className="w-full p-2 border rounded">
+          <select {...baseProps} className="w-full rounded border p-2">
             {!field.required && <option value="">Sélectionner {field.label}</option>}
             {field.options?.map((option) => (
               <option key={option} value={option}>
@@ -179,7 +179,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           <input
             {...baseProps}
             type="number"
-            className="w-full p-2 border rounded"
+            className="w-full rounded border p-2"
             placeholder={field.label}
           />
         );
@@ -189,7 +189,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           <input
             {...baseProps}
             type="date"
-            className="w-full p-2 border rounded"
+            className="w-full rounded border p-2"
             placeholder={field.label}
           />
         );
@@ -199,7 +199,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           <input
             {...baseProps}
             type="checkbox"
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
           />
         );
 
@@ -208,7 +208,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           <input
             {...baseProps}
             type="text"
-            className="w-full p-2 border rounded"
+            className="w-full rounded border p-2"
             placeholder={field.label}
           />
         );
@@ -263,21 +263,21 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
       </div>
 
       <div className="card-body">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {fields.map((field) => (
             <div
               key={field.name}
-              className={`${field.type === 'checkbox' ? 'flex items-center space-x-2 col-span-full' : field.type === 'textarea' ? 'col-span-full' : ''}`}
+              className={`${field.type === 'checkbox' ? 'col-span-full flex items-center space-x-2' : field.type === 'textarea' ? 'col-span-full' : ''}`}
             >
               <label
                 className={`block text-sm font-medium ${field.type === 'checkbox' ? 'order-2' : 'mb-1'}`}
               >
                 {field.label}
-                {field.required && <span className="text-red-500 ml-1">*</span>}
+                {field.required && <span className="ml-1 text-red-500">*</span>}
               </label>
               {renderField(field)}
               {(errors as any)[field.name] && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="mt-1 text-sm text-red-500">
                   {(errors as any)[field.name]?.message || 'Ce champ est requis'}
                 </p>
               )}
@@ -288,7 +288,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
             type="button"
             onClick={handleSubmit(handleFormSubmit)}
             disabled={isSubmitting}
-            className="btn btn-primary col-span-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary col-span-full mt-4 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <i className="fas fa-plus mr-2"></i>
             {isSubmitting

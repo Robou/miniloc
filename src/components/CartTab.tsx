@@ -30,21 +30,21 @@ const CartTab: React.FC<CartTabProps> = ({
         </div>
         <div className="card-body">
           {cart.length === 0 ? (
-            <div className="text-center py-12">
-              <i className="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
-              <p className="text-gray-500 text-lg">Votre panier est vide</p>
-              <Button onClick={onGoToCatalogue} className="mt-4 btn-primary">
+            <div className="py-12 text-center">
+              <i className="fas fa-shopping-cart mb-4 text-6xl text-gray-300"></i>
+              <p className="text-lg text-gray-500">Votre panier est vide</p>
+              <Button onClick={onGoToCatalogue} className="btn-primary mt-4">
                 <i className="fas fa-list mr-2"></i>
                 Parcourir le catalogue
               </Button>
             </div>
           ) : (
             <>
-              <div className="space-y-4 mb-6">
+              <div className="mb-6 space-y-4">
                 {cart.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                    className="flex items-center justify-between rounded-lg bg-gray-50 p-4"
                   >
                     <div className="flex-1">
                       <h4 className="font-semibold text-gray-800">
@@ -71,7 +71,7 @@ const CartTab: React.FC<CartTabProps> = ({
                   </div>
                 ))}
               </div>
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <Button onClick={onProceedToBorrow} className="btn-primary flex-1">
                   <i className="fas fa-check-circle mr-2"></i>
                   Procéder à l'emprunt

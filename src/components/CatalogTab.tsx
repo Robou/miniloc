@@ -35,7 +35,7 @@ const Catalog: React.FC<CatalogProps> = ({
       />
 
       {filteredItems.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredItems.map((item) => {
             const isInCart = !!cart.find((a) => a.id === item.id);
             return (
@@ -50,9 +50,9 @@ const Catalog: React.FC<CatalogProps> = ({
           })}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <i className="fas fa-search text-6xl text-gray-300 mb-4"></i>
-          <p className="text-gray-500 text-lg">
+        <div className="py-12 text-center">
+          <i className="fas fa-search mb-4 text-6xl text-gray-300"></i>
+          <p className="text-lg text-gray-500">
             Aucun {currentMode === 'articles' ? 'article' : 'livre'} trouvé
           </p>
         </div>

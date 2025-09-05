@@ -11,47 +11,6 @@ interface AdminTabProps {
   currentConfigName: string;
 }
 
-/* */
-/* TEST */
-/* */
-
-//const [itemType, setItemType] = React.useState('product');
-
-// const handleFormSubmit = (data) => {
-//   console.log('Données soumises:', { type: itemType, ...data });
-//   alert(`${itemType} créé avec succès !`);
-//   // Ici vous pouvez faire l'appel API
-// };
-
-// return (
-//   <div className="p-8">
-//     <div className="mb-6 text-center">
-//       <button
-//         onClick={() => setItemType('product')}
-//         className={`mr-4 px-4 py-2 rounded ${
-//           itemType === 'product' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-//         }`}
-//       >
-//         Produit
-//       </button>
-//       <button
-//         onClick={() => setItemType('service')}
-//         className={`px-4 py-2 rounded ${
-//           itemType === 'service' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-//         }`}
-//       >
-//         Service
-//       </button>
-//     </div>
-
-//     <AdaptiveItemForm itemType={itemType} onSubmit={handleFormSubmit} />
-//   </div>
-// );
-
-/* */
-/* FIN TEST */
-/* */
-
 const AdminTab: React.FC<AdminTabProps> = ({
   items,
   onAddItem,
@@ -87,12 +46,12 @@ const AdminTab: React.FC<AdminTabProps> = ({
           />
 
           <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4">{currentConfigName} existants</h3>
+            <h3 className="mb-4 text-lg font-semibold">{currentConfigName} existants</h3>
             <div className="grid gap-4">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between rounded-lg bg-gray-50 p-4"
                 >
                   <div className="flex-1">
                     <h4 className="font-semibold">

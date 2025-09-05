@@ -19,8 +19,8 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
   const isModeLockedByCart = cart.length > 0;
 
   return (
-    <div className="flex flex-col items-center mb-6">
-      <div className="bg-white rounded-lg shadow-sm border p-1 flex">
+    <div className="mb-6 flex flex-col items-center">
+      <div className="flex rounded-lg border bg-white p-1 shadow-sm">
         {Object.entries(MODE_CONFIGS).map(([mode, config]) => (
           <button
             key={mode}
@@ -32,11 +32,11 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
                 setCurrentMode(mode as AppMode);
               }
             }}
-            className={`px-4 py-2 rounded-md transition-colors ${
+            className={`rounded-md px-4 py-2 transition-colors ${
               currentMode === mode
                 ? 'bg-blue-500 text-white'
                 : isModeLockedByCart && mode !== currentMode
-                  ? 'text-gray-400 cursor-not-allowed bg-gray-50'
+                  ? 'cursor-not-allowed bg-gray-50 text-gray-400'
                   : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -47,7 +47,7 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
       </div>
       {/* Toast de verrouillage du mode */}
       {showModeLockedToast && (
-        <div className="mt-3 bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 rounded-lg shadow-sm animate-pulse">
+        <div className="mt-3 animate-pulse rounded-lg border border-orange-400 bg-orange-100 px-4 py-3 text-orange-700 shadow-sm">
           <div className="flex items-center">
             <i className="fas fa-lock mr-2"></i>
             <span className="text-sm">

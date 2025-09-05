@@ -73,7 +73,12 @@
 }
 
 body {
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    'Roboto',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   background-color: #f8f9fa;
   color: #111827;
   padding-top: 20px;
@@ -129,8 +134,6 @@ body {
   font-weight: bold;
 }
 
-
-
 /* Onglet Admin aligné à droite */
 .nav-tab.admin-tab {
   margin-left: auto;
@@ -144,7 +147,9 @@ body {
   border-radius: 0.5rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 1.5rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .card:hover {
@@ -168,7 +173,9 @@ body {
 /* Article cards */
 .article-card {
   height: 100%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   cursor: pointer;
 }
 
@@ -266,7 +273,9 @@ body {
   border: 1px solid #ced4da;
   border-radius: 0.375rem;
   padding: 0.75rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 }
 
 .form-control:focus {
@@ -294,8 +303,12 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Animations */
@@ -304,8 +317,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .bounce-in {
@@ -313,9 +332,15 @@ body {
 }
 
 @keyframes bounceIn {
-  0% { transform: scale(0.9); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Footer */
@@ -333,25 +358,35 @@ body {
   .nav-tabs {
     flex-wrap: wrap;
   }
-  
+
   .nav-tab {
     margin-bottom: 0.25rem;
     font-size: 0.875rem;
     padding: 0.5rem 1rem;
   }
-  
+
   .card-body {
     padding: 1rem;
   }
-  
+
   .article-card {
     margin-bottom: 1rem;
   }
 }
 
 /* Styles pour les types d'articles */
-.type-livre { border-left: 4px solid #3498db; }
-.type-carte { border-left: 4px solid #1abc9c; }
-.type-casque { border-left: 4px solid #e74c3c; }
-.type-corde { border-left: 4px solid #f39c12; }
-.type-baudrier { border-left: 4px solid #9b59b6; }
+.type-livre {
+  border-left: 4px solid #3498db;
+}
+.type-carte {
+  border-left: 4px solid #1abc9c;
+}
+.type-casque {
+  border-left: 4px solid #e74c3c;
+}
+.type-corde {
+  border-left: 4px solid #f39c12;
+}
+.type-baudrier {
+  border-left: 4px solid #9b59b6;
+}

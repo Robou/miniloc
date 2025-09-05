@@ -10,7 +10,7 @@ const Header: React.FC<HeaderProps> = ({ currentMode }) => {
 
   return (
     <div className="app-header text-center">
-      <h1 className="text-4xl font-bold mb-2">
+      <h1 className="mb-2 text-4xl font-bold">
         <i className={`${currentConfig.icon} mr-3`}></i>
         CAF Avignon - {currentConfig.name}
       </h1>

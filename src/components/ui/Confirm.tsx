@@ -3,29 +3,29 @@ import { confirmable, createConfirmation, type ConfirmDialogProps } from 'react-
 const MyDialog = ({ show, proceed, message }: ConfirmDialogProps<{ message: string }, boolean>) => (
   <div
     className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${
-      show ? 'opacity-100 visible bg-blue-50 bg-opacity-30' : 'opacity-0 invisible'
+      show ? 'bg-opacity-30 visible bg-blue-50 opacity-100' : 'invisible opacity-0'
     }`}
   >
     <div
       className={`card transform transition-all duration-300 ${
-        show ? 'scale-100 bounce-in' : 'scale-95'
-      } max-w-md w-full mx-4`}
+        show ? 'bounce-in scale-100' : 'scale-95'
+      } mx-4 w-full max-w-md`}
     >
       <div className="card-header">
-        <h3 className="text-lg font-semibold mb-0">Confirmation</h3>
+        <h3 className="mb-0 text-lg font-semibold">Confirmation</h3>
       </div>
       <div className="card-body">
-        <p className="text-gray-700 mb-6">{message}</p>
+        <p className="mb-6 text-gray-700">{message}</p>
         <div className="flex justify-end space-x-3">
           <button
             onClick={() => proceed(false)}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-all duration-200 font-medium"
+            className="rounded-md border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50"
           >
             Annuler
           </button>
           <button
             onClick={() => proceed(true)}
-            className="btn-primary px-4 py-2 border border-transparent rounded-md transition-all duration-200 font-medium"
+            className="btn-primary rounded-md border border-transparent px-4 py-2 font-medium transition-all duration-200"
           >
             Confirmer
           </button>

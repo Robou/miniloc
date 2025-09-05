@@ -13,7 +13,7 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ search, onSearchChange, placeholder }) => {
   return (
     <div className="search-container">
-      <div className="flex flex-col md:flex-row gap-4 items-center">
+      <div className="flex flex-col items-center gap-4 md:flex-row">
         <div className="flex-1">
           <div className="relative">
             {/* <Input

@@ -86,10 +86,6 @@ export const returnItem = async (
     return;
   }
 
-  // if (!confirm(`Êtes-vous sûr de vouloir retourner cet ${itemType} ?`)) {
-  //   return;
-  // }
-
   const { data, error } = await supabase.rpc(currentConfig.returnFunction, {
     p_borrow_id: borrowId,
   });

@@ -19,7 +19,7 @@ const LoginTab: React.FC<LoginTabProps> = ({
 }) => {
   return (
     <div className="fade-in">
-      <div className="card max-w-md mx-auto">
+      <div className="card mx-auto max-w-md">
         <div className="card-header">
           <h2 className="text-xl font-bold">
             <i className="fas fa-lock mr-2"></i>
@@ -29,7 +29,7 @@ const LoginTab: React.FC<LoginTabProps> = ({
         <div className="card-body">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Email administrateur
               </label>
               <Input
@@ -41,7 +41,7 @@ const LoginTab: React.FC<LoginTabProps> = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+              <label className="mb-2 block text-sm font-medium text-gray-700">Mot de passe</label>
               <Input
                 type="password"
                 placeholder="••••••••"
@@ -52,7 +52,7 @@ const LoginTab: React.FC<LoginTabProps> = ({
                 className="form-control"
               />
             </div>
-            <Button onClick={onLogin} className="w-full btn-primary">
+            <Button onClick={onLogin} className="btn-primary w-full">
               <i className="fas fa-sign-in-alt mr-2"></i>
               Se connecter
             </Button>

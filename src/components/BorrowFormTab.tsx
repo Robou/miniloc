@@ -38,11 +38,11 @@ const BorrowFormTab: React.FC<BorrowFormTabProps> = ({
         </div>
         <div className="card-body">
           <div className="mb-6">
-            <h3 className="font-semibold mb-3">Articles à emprunter :</h3>
+            <h3 className="mb-3 font-semibold">Articles à emprunter :</h3>
             <div className="space-y-2">
               {cart.map((item) => (
-                <div key={item.id} className="flex items-center p-3 bg-blue-50 rounded-lg">
-                  <i className="fas fa-check-circle text-blue-500 mr-3"></i>
+                <div key={item.id} className="flex items-center rounded-lg bg-blue-50 p-3">
+                  <i className="fas fa-check-circle mr-3 text-blue-500"></i>
                   <span className="font-medium">
                     {currentMode === 'articles'
                       ? (item as Article).designation || 'Article'
@@ -59,7 +59,7 @@ const BorrowFormTab: React.FC<BorrowFormTabProps> = ({
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 <i className="fas fa-user mr-1"></i>
                 Votre nom *
               </label>
@@ -74,7 +74,7 @@ const BorrowFormTab: React.FC<BorrowFormTabProps> = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 <i className="fas fa-envelope mr-1"></i>
                 Votre email (facultatif)
               </label>
@@ -93,7 +93,7 @@ const BorrowFormTab: React.FC<BorrowFormTabProps> = ({
             {currentMode === 'articles' && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     <i className="fas fa-euro-sign mr-1"></i>
                     Prix d'emprunt (facultatif)
                   </label>
@@ -109,7 +109,7 @@ const BorrowFormTab: React.FC<BorrowFormTabProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     <i className="fas fa-user-tie mr-1"></i>
                     Nom de l'encadrant (facultatif)
                   </label>
@@ -125,7 +125,7 @@ const BorrowFormTab: React.FC<BorrowFormTabProps> = ({
               </>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <div className="flex flex-col gap-3 pt-4 sm:flex-row">
               <Button
                 onClick={onConfirmBorrow}
                 className="btn-primary flex-1"
