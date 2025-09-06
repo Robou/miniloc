@@ -7,6 +7,7 @@ interface ItemCardProps {
   isInCart: boolean;
   onAddToCart: (item: Article | Book) => void;
   currentMode: 'articles' | 'books';
+  onSelect?: (item: Article | Book) => void;
 }
 
 const ItemCard: React.FunctionComponent<ItemCardProps> = ({
@@ -14,6 +15,7 @@ const ItemCard: React.FunctionComponent<ItemCardProps> = ({
   isInCart,
   onAddToCart,
   currentMode,
+  onSelect,
 }) => {
   const itemType = currentMode === 'articles' ? (item as Article).type : (item as Book).category;
   const typeClass = `type-${itemType?.toLowerCase().replace(/\s+/g, '-') || 'default'}`;
@@ -21,8 +23,19 @@ const ItemCard: React.FunctionComponent<ItemCardProps> = ({
   const displayName =
     currentMode === 'articles' ? (item as Article).designation || 'Article' : (item as Book).title;
 
+  const handleClick = () => {
+    if (onSelect) {
+      onSelect(item);
+    }
+  };
+
   return (
-    <div key={item.id} id={`item-${item.id}`} className={`card article-card ${typeClass} fade-in`}>
+    <div
+      key={item.id}
+      id={`item-${item.id}`}
+      className={`card article-card ${typeClass} fade-in ${onSelect ? 'cursor-pointer transition-shadow hover:shadow-lg' : ''}`}
+      onClick={handleClick}
+    >
       <div className="card-body">
         <div className="mb-3 flex items-start justify-between">
           <h3 className="flex-1 text-lg font-bold text-gray-800">{displayName}</h3>

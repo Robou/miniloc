@@ -7,7 +7,9 @@ import {
   ArticleSearchCriteria,
 } from '../types/AppMode.tsx';
 import ItemCard from './ui/ItemCard.tsx';
+import ItemDetails from './ui/ItemDetails.tsx';
 import SearchBar from './ui/SearchBar.tsx';
+import { Modal } from 'flowbite-react';
 
 interface CatalogProps {
   items: (Article | Book)[];
@@ -27,6 +29,20 @@ const Catalog: React.FC<CatalogProps> = ({
   currentMode,
 }) => {
   const [advancedCriteria, setAdvancedCriteria] = useState<SearchCriteria>({});
+  const [selectedItem, setSelectedItem] = useState<Article | Book | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleItemSelect = (item: Article | Book) => {
+    setSelectedItem(item);
+    // On mobile and tablet, show modal; on desktop, just set selected item
+    if (window.innerWidth < 1024) {
+      setShowModal(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   const matchesGlobalSearch = (item: Article | Book, searchTerm: string): boolean => {
     if (!searchTerm) return true;
@@ -201,19 +217,37 @@ const Catalog: React.FC<CatalogProps> = ({
       />
 
       {filteredItems.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredItems.map((item) => {
-            const isInCart = !!cart.find((a) => a.id === item.id);
-            return (
-              <ItemCard
-                key={item.id}
-                item={item}
-                isInCart={isInCart}
-                onAddToCart={onAddToCart}
+        <div className="flex flex-col gap-6 lg:flex-row">
+          {/* Liste des items */}
+          <div className="flex-1">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              {filteredItems.map((item) => {
+                const isInCart = !!cart.find((a) => a.id === item.id);
+                return (
+                  <ItemCard
+                    key={item.id}
+                    item={item}
+                    isInCart={isInCart}
+                    onAddToCart={onAddToCart}
+                    currentMode={currentMode}
+                    onSelect={handleItemSelect}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Détails de l'item sélectionné - visible seulement sur desktop */}
+          {selectedItem && (
+            <div className="hidden w-96 lg:block">
+              <ItemDetails
+                item={selectedItem}
                 currentMode={currentMode}
+                onAddToCart={onAddToCart}
+                isInCart={!!cart.find((a) => a.id === selectedItem.id)}
               />
-            );
-          })}
+            </div>
+          )}
         </div>
       ) : (
         <div className="py-12 text-center">
@@ -223,6 +257,29 @@ const Catalog: React.FC<CatalogProps> = ({
           </p>
         </div>
       )}
+
+      {/* Modal pour mobile */}
+      <Modal show={showModal} onClose={handleCloseModal} size="4xl">
+        <div className="p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-xl font-semibold">Détails de l'article</h3>
+            <button
+              onClick={handleCloseModal}
+              className="text-sm text-gray-500 underline hover:text-gray-700"
+            >
+              Retour à la liste
+            </button>
+          </div>
+          {selectedItem && (
+            <ItemDetails
+              item={selectedItem}
+              currentMode={currentMode}
+              onAddToCart={onAddToCart}
+              isInCart={!!cart.find((a) => a.id === selectedItem.id)}
+            />
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };

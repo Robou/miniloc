@@ -1,10 +1,18 @@
+/* import des icones FontAwesome : */
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css');
+
+/* Import des styles standard TailwindCSS : */
 @import 'tailwindcss';
+
+/* Import Flowbite react */
 @plugin 'flowbite-react/plugin/tailwindcss';
 @source '../.flowbite-react/class-list.json';
 
-@layer base {
-  :root {
+/* @theme {
+} */
+
+/* @layer base {
+   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -34,9 +42,9 @@
     --ring: 213 94% 68%;
 
     --radius: 0.5rem;
-  }
+  } 
 
-  .dark {
+   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -64,15 +72,15 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-  }
-}
+  } 
+} */
 
 /* Styles de base */
-* {
+/* * {
   border-color: #e5e7eb;
-}
+} */
 
-body {
+/* body {
   font-family:
     'Roboto',
     -apple-system,
@@ -82,7 +90,7 @@ body {
   background-color: #f8f9fa;
   color: #111827;
   padding-top: 20px;
-}
+} */
 
 /* Header styles */
 .app-header {
@@ -102,7 +110,7 @@ body {
 }
 
 /* Navigation tabs */
-.nav-tabs {
+/* .nav-tabs {
   border-bottom: 2px solid #dee2e6;
   margin-bottom: 1.5rem;
   display: flex;
@@ -135,10 +143,10 @@ body {
 }
 
 /* Onglet Admin aligné à droite */
-.nav-tab.admin-tab {
+/* .nav-tab.admin-tab {
   margin-left: auto;
   margin-right: 0;
-}
+} */
 
 /* Cards */
 .card {
@@ -344,14 +352,14 @@ body {
 }
 
 /* Footer */
-/* .footer {
+.footer {
   margin-top: 3rem;
   padding: 1.5rem 0;
   background-color: #343a40;
   color: white;
   text-align: center;
   border-radius: 0.5rem 0.5rem 0 0;
-} */
+}
 
 /* Responsive */
 @media (max-width: 768px) {
