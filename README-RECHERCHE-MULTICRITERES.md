@@ -42,7 +42,7 @@ La fonctionnalité de recherche multicritères permet aux utilisateurs de filtre
 ## Utilisation
 
 ### Interface utilisateur
-1. **Recherche simple** : Utilisez la barre de recherche principale pour une recherche rapide (rétrocompatible)
+1. **Recherche simple** : Utilisez la barre de recherche principale pour une recherche globale dans tous les champs disponibles
 2. **Recherche avancée** : Cliquez sur "Recherche avancée" pour afficher le formulaire multicritères
 3. **Combinaison de critères** : Remplissez autant de champs que souhaité - tous les critères sont combinés avec un ET logique
 4. **Réinitialisation** : Videz les champs pour revenir à la recherche simple
@@ -51,7 +51,7 @@ La fonctionnalité de recherche multicritères permet aux utilisateurs de filtre
 - La recherche respecte la casse (insensible à la casse)
 - Les champs vides sont ignorés
 - Pour les champs de sélection, seule la valeur exacte correspond
-- La recherche simple reste disponible pour la compatibilité
+- La recherche simple effectue une recherche globale dans tous les champs disponibles
 
 ## Architecture technique
 
@@ -85,7 +85,7 @@ export type ArticleSearchCriteria = {
 - Filtrage en temps réel lors des changements
 
 ## Compatibilité
-- **Rétrocompatible** : La recherche simple fonctionne comme avant
+- **Recherche globale** : La recherche simple parcourt tous les champs disponibles
 - **Mode adaptatif** : L'interface s'adapte selon le mode (articles/livres)
 - **Performance** : Filtrage optimisé avec early returns
 
@@ -98,7 +98,7 @@ export type ArticleSearchCriteria = {
 
 ## Tests
 L'implémentation a été testée avec :
-- Recherche simple (rétrocompatibilité)
+- Recherche simple globale dans tous les champs
 - Combinaisons de critères multiples
 - Changement de mode (articles/livres)
 - Interface responsive

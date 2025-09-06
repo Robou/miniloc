@@ -28,15 +28,45 @@ const Catalog: React.FC<CatalogProps> = ({
 }) => {
   const [advancedCriteria, setAdvancedCriteria] = useState<SearchCriteria>({});
 
+  const matchesGlobalSearch = (item: Article | Book, searchTerm: string): boolean => {
+    if (!searchTerm) return true;
+
+    const term = searchTerm.toLowerCase();
+
+    if (currentMode === 'books') {
+      const book = item as Book;
+      return !!(
+        book.title?.toLowerCase().includes(term) ||
+        book.author?.toLowerCase().includes(term) ||
+        book.type?.toLowerCase().includes(term) ||
+        book.category?.toLowerCase().includes(term) ||
+        book.publisher?.toLowerCase().includes(term) ||
+        book.publication_year?.toString().includes(term) ||
+        book.isbn?.toLowerCase().includes(term) ||
+        book.storage_location?.toLowerCase().includes(term) ||
+        book.keywords?.toLowerCase().includes(term) ||
+        book.description?.toLowerCase().includes(term)
+      );
+    } else {
+      const article = item as Article;
+      return !!(
+        article.designation?.toLowerCase().includes(term) ||
+        article.type?.toLowerCase().includes(term) ||
+        article.color?.toLowerCase().includes(term) ||
+        article.manufacturer?.toLowerCase().includes(term) ||
+        article.model?.toLowerCase().includes(term) ||
+        article.operational_status?.toLowerCase().includes(term) ||
+        article.manufacturer_id?.toLowerCase().includes(term) ||
+        article.club_id?.toLowerCase().includes(term) ||
+        article.usage_notes?.toLowerCase().includes(term)
+      );
+    }
+  };
+
   const matchesCriteria = (item: Article | Book, criteria: SearchCriteria): boolean => {
     if (currentMode === 'books') {
       const book = item as Book;
       const bookCriteria = criteria as BookSearchCriteria;
-
-      // Recherche simple (rétrocompatibilité)
-      if (search && !book.title?.toLowerCase().includes(search.toLowerCase())) {
-        return false;
-      }
 
       // Critères avancés pour les livres
       if (
@@ -90,11 +120,6 @@ const Catalog: React.FC<CatalogProps> = ({
     } else {
       const article = item as Article;
       const articleCriteria = criteria as ArticleSearchCriteria;
-
-      // Recherche simple (rétrocompatibilité)
-      if (search && !article.designation?.toLowerCase().includes(search.toLowerCase())) {
-        return false;
-      }
 
       // Critères avancés pour les articles
       if (
@@ -161,10 +186,8 @@ const Catalog: React.FC<CatalogProps> = ({
       return matchesCriteria(item, advancedCriteria);
     }
 
-    // Sinon, utiliser la recherche simple (rétrocompatibilité)
-    const searchField =
-      currentMode === 'articles' ? (item as Article).designation || '' : (item as Book).title || '';
-    return searchField.toLowerCase().includes(search.toLowerCase());
+    // Sinon, utiliser la recherche globale dans tous les champs
+    return matchesGlobalSearch(item, search);
   });
 
   return (
