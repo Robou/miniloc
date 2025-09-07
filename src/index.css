@@ -5,8 +5,8 @@
 @import 'tailwindcss';
 
 /* Import Flowbite react */
-@plugin 'flowbite-react/plugin/tailwindcss';
-@source '../.flowbite-react/class-list.json';
+/* @plugin 'flowbite-react/plugin/tailwindcss';
+@source '../.flowbite-react/class-list.json'; */
 
 /* @theme {
 } */
@@ -383,7 +383,7 @@
 }
 
 /* Styles pour les types d'articles */
-.type-livre {
+/* .type-livre {
   border-left: 4px solid #3498db;
 }
 .type-carte {
@@ -397,4 +397,4 @@
 }
 .type-baudrier {
   border-left: 4px solid #9b59b6;
-}
+} */

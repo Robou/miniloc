@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Card, Badge, Button } from 'flowbite-react';
+import { Card, Button } from 'flowbite-react';
 import { Article, Book } from '@/types/AppMode';
 
 interface ItemDetailsProps {
@@ -15,6 +15,8 @@ const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
   onAddToCart,
   isInCart,
 }) => {
+  const displayName =
+    currentMode === 'articles' ? (item as Article).designation || 'Article' : (item as Book).title;
   const renderField = (label: string, value: string | number | boolean | undefined) => {
     if (value === undefined || value === null || value === '') return null;
     return (
@@ -27,13 +29,21 @@ const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
 
   return (
     <Card className="w-full">
-      <div className="mb-4 flex items-start justify-between">
-        <h2 className="text-xl font-bold text-gray-900">
-          {currentMode === 'articles' ? (item as Article).designation : (item as Book).title}
-        </h2>
-        <Badge color={item.available ? 'green' : 'red'}>
-          {item.available ? 'Disponible' : 'Emprunté'}
-        </Badge>
+      <div className="mb-3 flex items-start justify-between">
+        <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
+        <div className="ml-2">
+          {item.available ? (
+            <span className="badge badge-success">
+              <i className="fas fa-check mr-1"></i>
+              Disponible
+            </span>
+          ) : (
+            <span className="badge badge-danger">
+              <i className="fas fa-times mr-1"></i>
+              Emprunté
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -76,9 +86,13 @@ const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
           <Button
             onClick={() => onAddToCart(item)}
             disabled={!item.available || isInCart}
-            className="w-full"
-            color={!item.available ? 'gray' : isInCart ? 'success' : 'blue'}
+            className={`w-full ${
+              !item.available ? 'btn-unavailable' : isInCart ? 'btn-added' : 'btn-primary'
+            }`}
           >
+            <i
+              className={`fas ${!item.available ? 'fa-ban' : isInCart ? 'fa-check' : 'fa-plus'} mr-2`}
+            ></i>
             {!item.available ? 'Indisponible' : isInCart ? 'Ajouté au panier' : 'Ajouter au panier'}
           </Button>
         </div>

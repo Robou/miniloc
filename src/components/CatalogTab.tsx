@@ -208,58 +208,75 @@ const Catalog: React.FC<CatalogProps> = ({
 
   return (
     <div className="fade-in">
-      <SearchBar
-        search={search}
-        onSearchChange={onSearchChange}
-        placeholder={`Rechercher un ${currentMode === 'articles' ? 'article' : 'livre'}...`}
-        currentMode={currentMode}
-        onAdvancedSearchChange={setAdvancedCriteria}
-      />
+      {/* Header fixe */}
+      <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
+        <SearchBar
+          search={search}
+          onSearchChange={onSearchChange}
+          placeholder={`Rechercher rapide`}
+          currentMode={currentMode}
+          onAdvancedSearchChange={setAdvancedCriteria}
+        />
+      </div>
 
-      {filteredItems.length > 0 ? (
-        <div className="flex flex-col gap-6 lg:flex-row">
-          {/* Liste des items */}
-          <div className="flex-1">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              {filteredItems.map((item) => {
-                const isInCart = !!cart.find((a) => a.id === item.id);
-                return (
-                  <ItemCard
-                    key={item.id}
-                    item={item}
-                    isInCart={isInCart}
-                    onAddToCart={onAddToCart}
+      {/* Contenu scrollable */}
+      <div className="flex-1">
+        {filteredItems.length > 0 ? (
+          <div className="flex min-h-full gap-6">
+            {/* Liste des items - scrollable */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                {filteredItems.map((item) => {
+                  const isInCart = !!cart.find((a) => a.id === item.id);
+                  const isSelected = selectedItem?.id === item.id;
+                  return (
+                    <ItemCard
+                      key={item.id}
+                      item={item}
+                      isInCart={isInCart}
+                      onAddToCart={onAddToCart}
+                      currentMode={currentMode}
+                      onSelect={handleItemSelect}
+                      isSelected={isSelected}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Détails de l'item sélectionné - fixe à droite sur desktop */}
+            {selectedItem && (
+              <div className="hidden w-96 flex-shrink-0 lg:block">
+                <div className="sticky top-24">
+                  <ItemDetails
+                    item={selectedItem}
                     currentMode={currentMode}
-                    onSelect={handleItemSelect}
+                    onAddToCart={onAddToCart}
+                    isInCart={!!cart.find((a) => a.id === selectedItem.id)}
                   />
-                );
-              })}
-            </div>
+                </div>
+              </div>
+            )}
           </div>
-
-          {/* Détails de l'item sélectionné - visible seulement sur desktop */}
-          {selectedItem && (
-            <div className="hidden w-96 lg:block">
-              <ItemDetails
-                item={selectedItem}
-                currentMode={currentMode}
-                onAddToCart={onAddToCart}
-                isInCart={!!cart.find((a) => a.id === selectedItem.id)}
-              />
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="py-12 text-center">
-          <i className="fas fa-search mb-4 text-6xl text-gray-300"></i>
-          <p className="text-lg text-gray-500">
-            Aucun {currentMode === 'articles' ? 'article' : 'livre'} trouvé
-          </p>
-        </div>
-      )}
+        ) : (
+          <div className="py-12 text-center">
+            <i className="fas fa-search mb-4 text-6xl text-gray-300"></i>
+            <p className="text-lg text-gray-500">
+              Aucun {currentMode === 'articles' ? 'article' : 'livre'} trouvé
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Modal pour mobile */}
-      <Modal show={showModal} onClose={handleCloseModal} size="4xl">
+      <Modal
+        show={showModal}
+        onClose={handleCloseModal}
+        size="md"
+        position="center"
+        dismissible={true}
+        className="bg-gray-900/50 backdrop-blur-sm"
+      >
         <div className="p-6">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xl font-semibold">Détails de l'article</h3>

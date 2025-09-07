@@ -8,6 +8,7 @@ interface ItemCardProps {
   onAddToCart: (item: Article | Book) => void;
   currentMode: 'articles' | 'books';
   onSelect?: (item: Article | Book) => void;
+  isSelected?: boolean;
 }
 
 const ItemCard: React.FunctionComponent<ItemCardProps> = ({
@@ -16,6 +17,7 @@ const ItemCard: React.FunctionComponent<ItemCardProps> = ({
   onAddToCart,
   currentMode,
   onSelect,
+  isSelected = false,
 }) => {
   const itemType = currentMode === 'articles' ? (item as Article).type : (item as Book).category;
   const typeClass = `type-${itemType?.toLowerCase().replace(/\s+/g, '-') || 'default'}`;
@@ -33,7 +35,7 @@ const ItemCard: React.FunctionComponent<ItemCardProps> = ({
     <div
       key={item.id}
       id={`item-${item.id}`}
-      className={`card article-card ${typeClass} fade-in ${onSelect ? 'cursor-pointer transition-shadow hover:shadow-lg' : ''}`}
+      className={`${isSelected ? 'border-2 !border-blue-500 !bg-blue-50' : 'border !border-gray-200'} card article-card ${typeClass} fade-in ${onSelect ? 'cursor-pointer transition-shadow hover:shadow-lg' : ''}`}
       onClick={handleClick}
     >
       <div className="card-body">
