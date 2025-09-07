@@ -98,7 +98,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   );
 
   const renderArticleSearchFields = () => (
-    <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
       <TextInput
         placeholder="Désignation"
         value={(advancedCriteria as ArticleSearchCriteria).designation || ''}
@@ -150,44 +150,47 @@ const SearchBar: React.FC<SearchBarProps> = ({
           checked={(advancedCriteria as ArticleSearchCriteria).is_epi || false}
           onChange={(e) => handleAdvancedChange('is_epi', e.target.checked)}
         />
-        <label htmlFor="is-epi">Équipement de protection individuelle (EPI)</label>
+        <label htmlFor="is-epi">EPI</label>
       </div>
     </div>
   );
 
   return (
     <div className="search-container">
-      <div className="flex flex-col items-center gap-4 md:flex-row">
-        <div className="flex-1">
-          <div className="relative">
-            <TextInput
-              id="search1"
-              type="text"
-              placeholder={placeholder}
-              value={search}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
-            />
-          </div>
+      <div className="flex flex-col">
+        <div className="flex flex-row">
+          <Button className="flex-none p-0">
+            <FaMagnifyingGlass className="mr-2 h-5 w-5 text-blue-700" />
+          </Button>
+          <TextInput
+            id="search1"
+            type="text"
+            placeholder={placeholder}
+            value={search}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
+            sizing="sm"
+            className="flex-auto"
+          />
         </div>
         <div></div>
-        <Button>
+        {/* <Button className="me-2 mb-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           <FaMagnifyingGlass className="mr-2" />
           Rechercher
-        </Button>
+        </Button> */}
       </div>
 
       <div className="mt-4">
         <Button
           color="light"
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center gap-2"
+          className="flex flex-auto items-center gap-2 focus:ring-0 focus:outline-1"
         >
           Recherche avancée
           {showAdvanced ? <FaChevronUp /> : <FaChevronDown />}
         </Button>
 
         {showAdvanced && (
-          <div className="mt-4 rounded-lg border bg-gray-50 p-4">
+          <div className="rounded-lg p-0">
             {currentMode === 'books' ? renderBookSearchFields() : renderArticleSearchFields()}
           </div>
         )}
