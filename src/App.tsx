@@ -8,7 +8,8 @@ import { handleLogin } from './utils/authUtils';
 import { addItemToDB, editItemToDB } from './utils/itemUtils';
 
 import { AppMode, Article, Book, BookBorrow, ArticleBorrow, MODE_CONFIGS } from './types/AppMode';
-import { Tabs, TabItem } from 'flowbite-react';
+import NavTabs from './components/ui/NavTabs';
+
 import Catalog from './components/CatalogTab';
 import CartTab from './components/CartTab';
 import BorrowFormTab from './components/BorrowFormTab';
@@ -20,8 +21,6 @@ import Footer from './components/ui/Footer';
 import ModeSelector from './components/ui/ModeSelector';
 
 import { Toaster } from 'react-hot-toast';
-
-import { FaList, FaHandHolding, FaLock, FaCartShopping } from 'react-icons/fa6';
 
 export default function App() {
   const newLocal = useState<AppMode>('articles');
@@ -128,66 +127,84 @@ export default function App() {
         />
 
         {/* Navigation Tabs */}
-        <Tabs
-          aria-label="Navigation tabs"
-          variant="pills"
-          onActiveTabChange={(tab) => {
-            const tabIds = ['catalogue', 'cart', 'borrows', 'login'];
-            setStep(tabIds[tab] as typeof step);
-          }}
-        >
-          {/* Catalogue Tab */}
-          <TabItem active={step === 'catalogue'} icon={FaList} title="Catalogue">
-            {step === 'catalogue' && (
-              <Catalog
-                items={currentItems}
-                search={search}
-                onSearchChange={setSearch}
-                cart={cart}
-                onAddToCart={addToCartHandler}
-                currentMode={currentMode}
-              />
-            )}
-          </TabItem>
 
-          {/* Cart Tab */}
-          <TabItem active={step === 'cart'} icon={FaCartShopping} title={`Panier (${cart.length})`}>
-            {step === 'cart' && (
-              <CartTab
-                cart={cart}
-                onRemoveFromCart={removeFromCartHandler}
-                onClearCart={clearCartHandler}
-                onProceedToBorrow={() => setStep('borrow')}
-                onGoToCatalogue={() => setStep('catalogue')}
-                currentMode={currentMode}
-              />
-            )}
-          </TabItem>
+        <NavTabs
+          tabs={[
+            {
+              id: 'catalogue',
+              label: 'Catalogue',
+              icon: 'fas fa-list',
+              isActive: step === 'catalogue',
+              onClick: () => setStep('catalogue'),
+            },
+            {
+              id: 'cart',
+              label: 'Panier',
+              icon: 'fas fa-shopping-cart',
+              isActive: step === 'cart',
+              onClick: () => setStep('cart'),
+              badge: cart.length.toString(),
+            },
+            {
+              id: 'borrows',
+              label: 'Emprunts',
+              icon: 'fas fa-hand-holding',
+              isActive: step === 'borrows',
+              onClick: () => setStep('borrows'),
+            },
+            {
+              id: 'login',
+              label: 'Admin',
+              icon: 'fas fa-lock',
+              isActive: step === 'login',
+              onClick: () => setStep('login'),
+            },
+          ]}
+        />
 
-          {/* Borrows Tab */}
-          <TabItem active={step === 'borrows'} icon={FaHandHolding} title="Emprunts">
-            {step === 'borrows' && (
-              <BorrowsTab
-                borrows={borrows}
-                onReturnItem={returnItemHandler}
-                currentMode={currentMode}
-              />
-            )}
-          </TabItem>
+        {/* Catalogue Tab */}
+        {step === 'catalogue' && (
+          <Catalog
+            items={currentItems}
+            search={search}
+            onSearchChange={setSearch}
+            cart={cart}
+            onAddToCart={addToCartHandler}
+            currentMode={currentMode}
+          />
+        )}
 
-          {/* Login Tab */}
-          <TabItem active={step === 'login'} icon={FaLock} title="Admin">
-            {step === 'login' && (
-              <LoginTab
-                email={adminEmail}
-                password={adminPassword}
-                onEmailChange={setAdminEmail}
-                onPasswordChange={setAdminPassword}
-                onLogin={handleLoginHandler}
-              />
-            )}
-          </TabItem>
-        </Tabs>
+        {/* Cart Tab */}
+        {step === 'cart' && (
+          <CartTab
+            cart={cart}
+            onRemoveFromCart={removeFromCartHandler}
+            onClearCart={clearCartHandler}
+            onProceedToBorrow={() => setStep('borrow')}
+            onGoToCatalogue={() => setStep('catalogue')}
+            currentMode={currentMode}
+          />
+        )}
+
+        {/* Borrows Tab */}
+        {step === 'borrows' && (
+          <BorrowsTab
+            borrows={borrows}
+            onReturnItem={returnItemHandler}
+            currentMode={currentMode}
+          />
+        )}
+
+        {/* Login Tab */}
+        {step === 'login' && (
+          <LoginTab
+            email={adminEmail}
+            password={adminPassword}
+            onEmailChange={setAdminEmail}
+            onPasswordChange={setAdminPassword}
+            onLogin={handleLoginHandler}
+          />
+        )}
 
         {/* Borrow Form Tab - displayed when borrow step is active */}
         {step === 'borrow' && (
