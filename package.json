@@ -19,8 +19,10 @@
   "description": "Application de gestion de prêt de matériel et bibliothèque pour les clubs alpins",
   "dependencies": {
     "@supabase/supabase-js": "^2.50.0",
+    "@types/papaparse": "^5.3.16",
     "clsx": "^2.1.1",
     "flowbite-react": "^0.12.8",
+    "papaparse": "^5.5.3",
     "react": "^19.1.0",
     "react-confirm": "^0.4.0",
     "react-dom": "^19.1.0",
