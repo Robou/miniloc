@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Article, Book } from '../types/AppMode';
 //import ItemForm from './ItemForm';
 import AdaptiveItemForm from './ItemForm';
+import BatchImportComponent from './BatchImportComponent';
 
 interface AdminTabProps {
   items: (Article | Book)[];
@@ -44,6 +45,8 @@ const AdminTab: React.FC<AdminTabProps> = ({
             onSubmit={handleFormSubmit}
             initialData={editingItem || {}}
           />
+
+          <BatchImportComponent mode={currentMode === 'articles' ? 'equipment' : currentMode} />
 
           <div className="mt-8">
             <h3 className="mb-4 text-lg font-semibold">{currentConfigName} existants</h3>
