@@ -9,7 +9,6 @@ import {
 import ItemCard from './ui/ItemCard.tsx';
 import ItemDetails from './ui/ItemDetails.tsx';
 import SearchBar from './ui/SearchBar.tsx';
-import { Modal } from 'flowbite-react';
 
 interface CatalogProps {
   items: (Article | Book)[];
@@ -269,34 +268,43 @@ const Catalog: React.FC<CatalogProps> = ({
       </div>
 
       {/* Modal pour mobile */}
-      <Modal
-        show={showModal}
-        onClose={handleCloseModal}
-        size="md"
-        position="center"
-        dismissible={true}
-        className="bg-gray-900/50 backdrop-blur-sm"
-      >
-        <div className="p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-xl font-semibold">Détails de l'article</h3>
-            <button
-              onClick={handleCloseModal}
-              className="text-sm text-gray-500 underline hover:text-gray-700"
-            >
-              Retour à la liste
-            </button>
+      {showModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm"
+          onClick={handleCloseModal}
+        >
+          <div
+            className="h-4/5 w-4/5 overflow-y-auto rounded-lg bg-white p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-xl font-semibold">Détails de l'article</h3>
+              <button
+                onClick={handleCloseModal}
+                className="text-sm text-gray-500 underline hover:text-gray-700"
+              >
+                Retour à la liste
+              </button>
+            </div>
+            {selectedItem && (
+              <ItemDetails
+                item={selectedItem}
+                currentMode={currentMode}
+                onAddToCart={onAddToCart}
+                isInCart={!!cart.find((a) => a.id === selectedItem.id)}
+              />
+            )}
+            <div className="flex items-center justify-center">
+              <button
+                onClick={handleCloseModal}
+                className="text-sm text-gray-500 underline hover:text-gray-700"
+              >
+                Retour à la liste
+              </button>
+            </div>
           </div>
-          {selectedItem && (
-            <ItemDetails
-              item={selectedItem}
-              currentMode={currentMode}
-              onAddToCart={onAddToCart}
-              isInCart={!!cart.find((a) => a.id === selectedItem.id)}
-            />
-          )}
         </div>
-      </Modal>
+      )}
     </div>
   );
 };
