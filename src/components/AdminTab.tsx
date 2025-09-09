@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Article, Book } from '../types/AppMode';
+import { Article, Book, AppMode } from '../types/AppMode';
 //import ItemForm from './ItemForm';
 import AdaptiveItemForm from './ItemForm';
 import BatchImportComponent from './BatchImportComponent';
+import AdminModeController from './AdminModeController';
+import Catalog from './CatalogTab';
 
 interface AdminTabProps {
   items: (Article | Book)[];
@@ -10,6 +12,12 @@ interface AdminTabProps {
   onEditItem: (itemData: Partial<Article | Book>) => void;
   currentMode: 'articles' | 'books';
   currentConfigName: string;
+  enabledModes: AppMode[];
+  onEnabledModesChange: (modes: AppMode[]) => void;
+  search: string; // Ajouter cette prop
+  onSearchChange: (value: string) => void; // pour Catalog
+  cart: (Article | Book)[]; // pour Catalog
+  onAddToCart: (item: Article | Book) => void; // pour Catalog
 }
 
 const AdminTab: React.FC<AdminTabProps> = ({
@@ -18,6 +26,12 @@ const AdminTab: React.FC<AdminTabProps> = ({
   onEditItem,
   currentMode,
   currentConfigName,
+  enabledModes,
+  onEnabledModesChange,
+  search,
+  onSearchChange,
+  cart,
+  onAddToCart,
 }) => {
   const [editingItem, setEditingItem] = useState<Article | Book | null>(null);
 
@@ -39,6 +53,11 @@ const AdminTab: React.FC<AdminTabProps> = ({
           </h2>
         </div>
         <div className="card-body">
+          <AdminModeController
+            enabledModes={enabledModes}
+            onEnabledModesChange={onEnabledModesChange}
+          />
+
           {/* <ItemForm onAdd={onAddItem} currentMode={currentMode} /> */}
           <AdaptiveItemForm
             currentMode={currentMode}
@@ -92,6 +111,14 @@ const AdminTab: React.FC<AdminTabProps> = ({
               ))}
             </div>
           </div>
+          <Catalog
+            items={items}
+            search={search}
+            onSearchChange={onSearchChange}
+            cart={cart}
+            onAddToCart={onAddToCart}
+            currentMode={currentMode}
+          />
         </div>
       </div>
     </div>

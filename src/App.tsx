@@ -43,6 +43,14 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [borrows, setBorrows] = useState<ArticleBorrow[] | BookBorrow[]>([]);
   const [showModeLockedToast, setShowModeLockedToast] = useState(false);
+  const [enabledModes, setEnabledModes] = useState<AppMode[]>(['articles', 'books']);
+
+  // Si un seul mode est activé, forcer currentMode vers ce mode
+  useEffect(() => {
+    if (enabledModes.length === 1 && currentMode !== enabledModes[0]) {
+      setCurrentMode(enabledModes[0]);
+    }
+  }, [enabledModes, currentMode, setCurrentMode]);
 
   const currentConfig = MODE_CONFIGS[currentMode];
   const currentItems = currentMode === 'articles' ? articles : books;
@@ -117,14 +125,17 @@ export default function App() {
         {/* Header */}
         <Header currentMode={currentMode} />
 
-        {/* Mode Selector */}
-        <ModeSelector
-          currentMode={currentMode}
-          cart={cart}
-          setCurrentMode={setCurrentMode}
-          showModeLockedToast={showModeLockedToast}
-          setShowModeLockedToast={setShowModeLockedToast}
-        />
+        {/* Mode Selector - seulement si plusieurs modes sont activés */}
+        {enabledModes.length > 1 && (
+          <ModeSelector
+            currentMode={currentMode}
+            cart={cart}
+            setCurrentMode={setCurrentMode}
+            showModeLockedToast={showModeLockedToast}
+            setShowModeLockedToast={setShowModeLockedToast}
+            enabledModes={enabledModes}
+          />
+        )}
 
         {/* Navigation Tabs */}
 
@@ -226,6 +237,16 @@ export default function App() {
             onEditItem={editItemHandler}
             currentMode={currentMode}
             currentConfigName={currentConfig.name}
+            enabledModes={enabledModes}
+            onEnabledModesChange={setEnabledModes}
+            search={''}
+            onSearchChange={function (): void {
+              throw new Error('Function not implemented.');
+            }}
+            cart={[]}
+            onAddToCart={function (): void {
+              throw new Error('Function not implemented.');
+            }}
           />
         )}
       </div>

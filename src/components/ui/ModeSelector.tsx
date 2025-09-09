@@ -7,6 +7,7 @@ interface ModeSelectorProps {
   setCurrentMode: (mode: AppMode) => void;
   showModeLockedToast: boolean;
   setShowModeLockedToast: (show: boolean) => void;
+  enabledModes: AppMode[]; // Maintenant requis puisqu'on l'affiche seulement avec plusieurs modes
 }
 
 const ModeSelector: React.FC<ModeSelectorProps> = ({
@@ -15,13 +16,19 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
   setCurrentMode,
   showModeLockedToast,
   setShowModeLockedToast,
+  enabledModes,
 }) => {
   const isModeLockedByCart = cart.length > 0;
+
+  // Les modes sont déjà filtrés au niveau App.tsx
+  const availableModes = Object.entries(MODE_CONFIGS).filter(([mode]) =>
+    enabledModes.includes(mode as AppMode)
+  );
 
   return (
     <div className="mb-6 flex flex-col items-center">
       <div className="flex rounded-lg border bg-white p-1 shadow-sm">
-        {Object.entries(MODE_CONFIGS).map(([mode, config]) => (
+        {availableModes.map(([mode, config]) => (
           <button
             key={mode}
             onClick={() => {
