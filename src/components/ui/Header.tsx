@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ currentMode }) => {
     <div className="app-header text-center">
       <h1 className="mb-2 text-4xl font-bold">
         <i className={`${currentConfig.icon} mr-3`}></i>
-        CAF Avignon - {currentConfig.name}
+        Miniloc - {currentConfig.name}
       </h1>
       <p className="lead text-lg text-gray-600">
         Consultez et empruntez{' '}

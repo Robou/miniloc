@@ -29,9 +29,9 @@ const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
 
   return (
     <Card className="w-full">
-      <div className="mb-3 flex items-start justify-between">
-        <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
-        <div className="ml-2">
+      <div className="mb-3 flex flex-col items-start">
+        <h2 className="mb-2 text-xl font-bold text-gray-900">{displayName}</h2>
+        <div className="mb-2">
           {item.available ? (
             <span className="badge badge-success">
               <i className="fas fa-check mr-1"></i>
@@ -44,11 +44,24 @@ const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
             </span>
           )}
         </div>
+        <div className="mb-2">
+          {currentMode === 'articles' && (item as Article).is_epi ? (
+            <span className="badge badge-success">
+              <i className="fas fa-check mr-1"></i>
+              EPI
+            </span>
+          ) : (
+            <span className="badge badge-danger">
+              <i className="fas fa-times mr-1"></i>
+              non EPI
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
         <div>
-          <h3 className="mb-3 text-lg font-semibold">Informations générales</h3>
+          {/* <h3 className="mb-3 text-lg font-semibold">Informations générales</h3> */}
           <dl className="space-y-2">
             {currentMode === 'articles' ? (
               <>
@@ -58,10 +71,6 @@ const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
                 {renderField('Taille', (item as Article).size)}
                 {renderField('Couleur', (item as Article).color)}
                 {renderField('État opérationnel', (item as Article).operational_status)}
-                {renderField(
-                  'Équipement de protection individuelle',
-                  (item as Article).is_epi ? 'Oui' : 'Non'
-                )}
                 {renderField('Date de fabrication', (item as Article).manufacturing_date)}
                 {renderField("Notes d'utilisation", (item as Article).usage_notes)}
               </>
@@ -80,22 +89,21 @@ const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
             )}
           </dl>
         </div>
-
-        <div>
-          <h3 className="mb-3 text-lg font-semibold">Actions</h3>
-          <Button
-            onClick={() => onAddToCart(item)}
-            disabled={!item.available || isInCart}
-            className={`w-full ${
-              !item.available ? 'btn-unavailable' : isInCart ? 'btn-added' : 'btn-primary'
-            }`}
-          >
-            <i
-              className={`fas ${!item.available ? 'fa-ban' : isInCart ? 'fa-check' : 'fa-plus'} mr-2`}
-            ></i>
-            {!item.available ? 'Indisponible' : isInCart ? 'Ajouté au panier' : 'Ajouter au panier'}
-          </Button>
-        </div>
+      </div>
+      <div>
+        {/* <h3 className="mb-3 text-lg font-semibold">Actions</h3> */}
+        <Button
+          onClick={() => onAddToCart(item)}
+          disabled={!item.available || isInCart}
+          className={`w-full ${
+            !item.available ? 'btn-unavailable' : isInCart ? 'btn-added' : 'btn-primary'
+          }`}
+        >
+          <i
+            className={`fas ${!item.available ? 'fa-ban' : isInCart ? 'fa-check' : 'fa-plus'} mr-2`}
+          ></i>
+          {!item.available ? 'Indisponible' : isInCart ? 'Ajouté au panier' : 'Ajouter au panier'}
+        </Button>
       </div>
     </Card>
   );
