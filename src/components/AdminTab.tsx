@@ -43,6 +43,7 @@ const AdminTab: React.FC<AdminTabProps> = ({
       onAddItem(itemData);
     }
   };
+
   return (
     <div className="fade-in">
       <div className="card">
@@ -52,6 +53,7 @@ const AdminTab: React.FC<AdminTabProps> = ({
             Espace Administrateur
           </h2>
         </div>
+
         <div className="card-body">
           <AdminModeController
             enabledModes={enabledModes}
