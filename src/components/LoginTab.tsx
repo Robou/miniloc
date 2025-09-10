@@ -17,8 +17,23 @@ const LoginTab: React.FC<LoginTabProps> = ({
   onPasswordChange,
   onLogin,
 }) => {
+  const adminFeatures = [
+    "Sélection d'un ou des deux modes : bibliothèque ou location de matériel",
+    "Ajout/édition d'articles",
+    "Import par lots d'un grand nombre d'articles par fichier CSV",
+  ];
   return (
     <div className="fade-in">
+      <div className="admin-description mb-4 rounded bg-gray-100 p-3">
+        <h3 className="mb-2 font-semibold">
+          Fonctionnalités actuelles de l'interface administrateur :
+        </h3>
+        <ul className="list-inside list-disc">
+          {adminFeatures.map((feature, index) => (
+            <li key={index}>{feature}</li>
+          ))}
+        </ul>
+      </div>
       <div className="card mx-auto max-w-md">
         <div className="card-header">
           <h2 className="text-xl font-bold">
