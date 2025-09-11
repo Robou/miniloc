@@ -246,7 +246,7 @@ const Catalog: React.FC<CatalogProps> = ({
             {/* Détails de l'item sélectionné - fixe à droite sur desktop */}
             {selectedItem && (
               <div className="hidden w-96 flex-shrink-0 lg:block">
-                <div className="sticky top-24">
+                <div className="sticky top-43">
                   <ItemDetails
                     item={selectedItem}
                     currentMode={currentMode}

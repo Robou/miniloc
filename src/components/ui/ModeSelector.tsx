@@ -27,7 +27,7 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
 
   return (
     <div className="mb-6 flex flex-col items-center">
-      <div className="flex rounded-lg border bg-white p-1 shadow-sm">
+      <div className="flex rounded-lg border border-gray-300 bg-white p-1 shadow-sm">
         {availableModes.map(([mode, config]) => (
           <button
             key={mode}

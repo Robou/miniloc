@@ -102,7 +102,7 @@ const BatchImportComponent: React.FC<BatchImportComponentProps> = ({ mode }) => 
   };
 
   return (
-    <div className="mt-8 rounded-lg border bg-gray-50 p-4">
+    <div className="mt-8 rounded-lg border border-gray-400 bg-gray-50 p-4">
       <h3 className="mb-4 text-lg font-semibold">
         Import par lot - {mode === 'books' ? 'Livres' : 'Équipement'}
       </h3>

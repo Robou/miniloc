@@ -156,7 +156,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
         return (
           <textarea
             {...baseProps}
-            className="w-full rounded border p-2 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded border border-gray-200 p-2 focus:border-blue-500 focus:outline-none"
             rows={3}
             placeholder={field.label}
           />
@@ -164,7 +164,10 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
 
       case 'select':
         return (
-          <select {...baseProps} className="w-full rounded border p-2">
+          <select
+            {...baseProps}
+            className="w-full rounded border border-gray-200 p-2 text-gray-500"
+          >
             {!field.required && <option value="">Sélectionner {field.label}</option>}
             {field.options?.map((option) => (
               <option key={option} value={option}>
@@ -179,7 +182,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           <input
             {...baseProps}
             type="number"
-            className="w-full rounded border p-2"
+            className="w-full rounded border border-gray-200 p-2"
             placeholder={field.label}
           />
         );
@@ -189,7 +192,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           <input
             {...baseProps}
             type="date"
-            className="w-full rounded border p-2"
+            className="w-full rounded border border-gray-200 p-2"
             placeholder={field.label}
           />
         );
@@ -208,7 +211,7 @@ const AdaptiveItemForm: React.FC<AdaptiveItemFormProps> = ({
           <input
             {...baseProps}
             type="text"
-            className="w-full rounded border p-2"
+            className="w-full rounded border border-gray-200 p-2"
             placeholder={field.label}
           />
         );
