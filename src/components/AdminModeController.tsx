@@ -28,7 +28,7 @@ const AdminModeController: React.FC<AdminModeControllerProps> = ({
   };
 
   return (
-    <div className="mb-6 rounded-lg border bg-gray-50 p-4">
+    <div className="mb-6 rounded-lg border border-gray-400 bg-gray-50 p-4">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="flex w-full items-center justify-between text-left"
