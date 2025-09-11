@@ -208,7 +208,7 @@ const Catalog: React.FC<CatalogProps> = ({
   return (
     <div className="fade-in">
       {/* Header fixe */}
-      <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
+      <div className="sticky top-0 z-10 border-b border-gray-50 bg-gray-50">
         <SearchBar
           search={search}
           onSearchChange={onSearchChange}
