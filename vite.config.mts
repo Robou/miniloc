@@ -21,6 +21,11 @@ export default defineConfig({
     minify: 'terser',
     rollupOptions: {
       output: {
+        // Sécurisation : noms de fichiers avec hash pour empêcher la prédiction d'URLs
+        // Vite créera automatiquement le dossier 'assets' et utilisera ces noms
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: {
           vendor: ['react', 'react-dom'],
           supabase: ['@supabase/supabase-js'],
@@ -30,10 +35,10 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: true,
+    host: false, // Sécurité : n'accepte que les connexions locales
   },
   preview: {
     port: 3000,
-    host: true,
+    host: false, // Sécurité : n'accepte que les connexions locales
   },
 });
