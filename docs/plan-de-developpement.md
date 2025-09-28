@@ -139,7 +139,7 @@ L'application permet actuellement :
 ## Prochaines Étapes
 
 
-### Étape 6 : bases de données pour gérer la bibliothèques et le matériel du club : EN COURS DE TEST ET FIABILISATION ET DEBUG
+### Étape 6 : bases de données pour gérer la bibliothèques et le matériel du club : ✅ TERMINÉE
 **Objectif :** Rendre l'application compatible pour différents types de clubs (bibliothèque ou matériel de montagne) en créant des tables distinctes dans la base de données : deux tables pour les livres et leurs emprunts (déjà implémentée mais à étoffer), et deux tables pour des articles de matériel de montagne et leurs emprunts. L'installateur humain pourra choisir s'il installe l'appli pour l'un, pour l'autre, ou pour les deux modes de fonctionnement.
 L'utilisateur final pourra switcher entre deux interfaces similaires mais indépendantes, entre bibliothèque livres et matériel, à volonté, si les deux modes sont implémentés.
 
@@ -181,14 +181,14 @@ Il faudra créer ou mettre à jour les scripts de création des tables de la bas
 
 
 
-### Étape 7 : Améliorer la recherche d'articles au catalogue
-1. ajouter des filtres de recherche suivant les champs (la base de données s'étoffera dans le futur et de nouveaux champs seront ajoutés)
+### Étape 7 : Améliorer la recherche d'articles au catalogue ✅ TERMINÉE
+1. ✅ ajouter des filtres de recherche suivant les champs (la base de données s'étoffera dans le futur et de nouveaux champs seront ajoutés)
 
-### Étape 8 : Améliorer l'aspect de la GUI avec du CSS un peu plus beau. A FINIR
+### Étape 8 : Améliorer l'aspect de la GUI avec du CSS un peu plus beau. ✅ TERMINÉE
 1. ✅ Bases posées
-2. améliorer l'utilisation de tailwindcss et voir si on peut diminuer la taille du css grâce à ça.
-3. quelques bugs au niveau des cartes d'articles
-4. voir pour changer les pop-up navigateur par des toasts ?
+2. ✅ améliorer l'utilisation de tailwindcss et voir si on peut diminuer la taille du css grâce à ça.
+3. ✅ quelques bugs au niveau des cartes d'articles
+4. ✅ voir pour changer les pop-up navigateur par des toasts ?
 
 ### Étape 9 : Installation Automatisée
 Un script d'installation automatisé sera développé pour faciliter le déploiement par d'autres clubs :
