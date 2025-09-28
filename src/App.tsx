@@ -5,6 +5,7 @@ import supabase from './lib/supabase';
 import { addToCart, clearCart, removeFromCart } from './utils/cartUtils';
 import { confirmBorrow, returnItem } from './utils/borrowUtils';
 import { handleLogin } from './utils/authUtils';
+import { getOrCreateCSRFToken } from './utils/csrfUtils';
 import { addItemToDB, editItemToDB } from './utils/itemUtils';
 
 import { AppMode, Article, Book, BookBorrow, ArticleBorrow, MODE_CONFIGS } from './types/AppMode';
@@ -108,7 +109,8 @@ export default function App() {
   };
 
   const handleLoginHandler = async () => {
-    await handleLogin(adminEmail, adminPassword, setSession, setStep);
+    const token = getOrCreateCSRFToken();
+    await handleLogin(adminEmail, adminPassword, token, setSession, setStep);
   };
 
   const addItemHandler = async (itemData: Partial<Article | Book>) => {
