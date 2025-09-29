@@ -2,11 +2,13 @@
 
 Application basique de gestion d'emprunts pour clubs alpins. Conçue pour gérer à la fois une bibliothèque de livres/topos et du matériel de montagne (EPI, équipement technique, etc.), ou seulement l'un des deux.
 
+
 ## 🎯 À qui s'adresse cette application ?
 
 Cette application est idéale pour les clubs alpins ou toute autre petite association gérant des emprunts de matériel ou de documentation.
 
 Pour l'instant, il est néanmoins indispensable d'avoir des compétences informatiques en hébergement web et en développement pour la phase d'installation.
+
 
 ## ✨ Fonctionnalités principales actuelles
 
@@ -35,9 +37,7 @@ Le mode de fonctionnement décrit ci-dessous est un parti pris fort de l'applica
 - Consultation de la liste des équipement proposés
 - Nombreux champs : désignation, type, modèle, fabricant, numéro d'identification constructeur, numéro d'identification club, taille, état opérationnel, couleur, notes d'utilisation, classification EPI
 - à venir : calcul du prix des emprunts
-
 - **CETTE APPLICATION N'EST PAS UN GESTIONNAIRE D'EPI (équipements de protection individuelle)** (pas de gestion des dates de contrôle, de l'état etc.)
-
 
 ### 🛒 Fonctionnalités admin
 - **Login sécurisé** avec authentification par adresse mail + mot de passe
@@ -46,10 +46,45 @@ Le mode de fonctionnement décrit ci-dessous est un parti pris fort de l'applica
 - **Ajout et modification** d'articles individuels
 
 ### Interface
-
 - **Interface responsive** adaptée mobile/desktop
 
 
+## Origine du projet
+
+Cette application a été conçue dans l'objectif de faciliter la vie des clubs alpins proposant à leurs membres des services de bibliothèque et d'emprunt de matériel de montagne. Les constats fondateurs du projet :
+- les adhérents ont souvent du mal à utiliser un fichier d'emprunts fait sous un tableur comme Excel ou Libre Office.
+- il n'y a pas forcément toujours un bénévole gérant la bibliothèque ou l'emprunt de matériel présent au moment de l'emprunt.
+- les utilisateurs veulent une flexibilité maximale pour les emprunts et un désagrément minimal concernant les lourdeurs habituelles des applis (création de compte, connexion sécurisée...)
+- pas de solution "sur étagère" mise à disposition par la FFCAM pour les clubs, pour un sujet qui pourtant se pose dans chacun de ceux-ci.
+- le besoin pour les gestionnaires d'inventaire d'avoir une vue globale sur les articles sortis.
+
+
+## 🔧 Sous le capot
+
+### 🛠️ Technologies utilisées
+
+- **Frontend** : React 18 + TypeScript + Vite
+- **Base de données** : Supabase (PostgreSQL)
+- **UI/UX** : Tailwind CSS + composants personnalisés
+- **Déploiement** : AWS Amplify
+- **Code quality** : ESLint + Prettier
+
+### 🛡️ Sécurité
+
+- **Fonctions PostgreSQL sécurisées** pour les emprunts
+- **Pas de données sensibles** stockées, seul un nom ou pseudo est à renseigner. Champ email facultatif.
+- **Protection contre les abus** (rate limiting)
+
+
+## 📄 Licence
+
+Ce projet est sous licence libre pour encourager son adoption par la communauté.
+
+## 🆘 Support
+
+En cas de problème ou de question, ouvrir une issue sur le repository GitHub.
+
+---
 
 ## 🚀 Installation et configuration
 
@@ -193,38 +228,4 @@ Une fois l'application déployée et accessible, utilisez la **fonction d'import
 4. **Importez vos livres et/ou matériel directement depuis l'interface**
 
 
-## Origine du projet
 
-Cette application a été conçue dans l'objectif de faciliter la vie des clubs alpins proposant à leurs membres des services de bibliothèque et d'emprunt de matériel de montagne. Les constats fondateurs du projet :
-- les adhérents ont souvent du mal à utiliser un fichier d'emprunts fait sous un tableur comme Excel ou Libre Office.
-- il n'y a pas forcément toujours un bénévole gérant la bibliothèque ou l'emprunt de matériel présent au moment de l'emprunt.
-- les utilisateurs veulent une flexibilité maximale pour les emprunts et un désagrément minimal concernant les lourdeurs habituelles des applis (création de compte, connexion sécurisée...)
-- pas de solution "sur étagère" mise à disposition par la FFCAM pour les clubs, pour un sujet qui pourtant se pose dans chacun de ceux-ci.
-- le besoin pour les gestionnaires d'inventaire d'avoir une vue globale sur les articles sortis.
-
-## 🔧 Sous le capot
-
-### 🛠️ Technologies utilisées
-
-- **Frontend** : React 18 + TypeScript + Vite
-- **Base de données** : Supabase (PostgreSQL)
-- **UI/UX** : Tailwind CSS + composants personnalisés
-- **Déploiement** : AWS Amplify
-- **Code quality** : ESLint + Prettier
-
-### 🛡️ Sécurité
-
-- **Fonctions PostgreSQL sécurisées** pour les emprunts
-- **Pas de données sensibles** stockées, seul un nom ou pseudo est à renseigner. Champ email facultatif.
-- **Protection contre les abus** (rate limiting)
-
-
-## 📄 Licence
-
-Ce projet est sous licence libre pour encourager son adoption par la communauté.
-
-## 🆘 Support
-
-En cas de problème ou de question, ouvrir une issue sur le repository GitHub.
-
----
