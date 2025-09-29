@@ -1,66 +1,71 @@
 # 🏔️ Gestionnaire d'Emprunts pour Clubs de Sports de Montagne
 
-Application complète de gestion d'emprunts pour clubs alpins, clubs de randonnée et associations de sports de montagne. Conçue pour gérer à la fois une bibliothèque de livres/topos et du matériel de montagne (EPI, équipement technique, etc.).
+Application basique de gestion d'emprunts pour clubs alpins. Conçue pour gérer à la fois une bibliothèque de livres/topos et du matériel de montagne (EPI, équipement technique, etc.), ou seulement l'un des deux.
 
 ## 🎯 À qui s'adresse cette application ?
 
-Cette application est idéale pour :
-- **Clubs alpins** (CAF, FFME, etc.)
-- **Associations de randonnée**
-- **Clubs de sports de montagne**
-- **Écoles d'aventure et d'escalade**
-- **Tout organisme gérant des emprunts de matériel ou de documentation**
+Cette application est idéale pour les clubs alpins ou toute autre petite association gérant des emprunts de matériel ou de documentation.
 
-## ✨ Fonctionnalités principales
+Pour l'instant, il est néanmoins indispensable d'avoir des compétences informatiques en hébergement web et en développement pour la phase d'installation.
 
-### 🤝 Système basé sur la confiance
+## ✨ Fonctionnalités principales actuelles
+
+### Parcours d'emprunt complet
+- Recherche et consultation de la liste des articles disponibles
+- Système de panier (emprunts multiples)
+- Formulaire d'emprunt minimal
+- Liste des articles actuellement sortis du stock
+- Restitution d'emprunt en un clic
+
+### 🤝 Système basé sur la confiance pour flexibilité maximale et lourdeur minimale
+Le mode de fonctionnement décrit ci-dessous est un parti pris fort de l'application, 
 - **Pas d'authentification utilisateur** : système simple basé sur la confiance
 - **Un compte administrateur uniquement** pour la gestion du catalogue
 - **Transparence** : tous les emprunts sont visibles publiquement
+- L'utilisateur peut emprunter par panier, mais le retour des articles est effectué article par article (utile par exemple quand l'utilisateur ne rend qu'une partie du matériel qu'il a emprunté)
+- Un article peut être rendu par n'importe qui
+
 
 ### 📚 Mode Bibliothèque
-- Gestion de livres, cartes topographiques, topos d'escalade/alpinisme
-- Catégories : romans, manuels techniques, beaux livres, cartes IGN
-- Recherche par titre, auteur, catégorie, mots-clés
-- Gestion des emprunts avec dates de retour
+- Consultation de la liste d'ouvrages
+- Champs : titre, auteur, catégorie, éditeur, année, ISBN, description, mots-clés, lieu de stockage
+- Catégories: topos, cartes, manuels techniques, beaux livres, romans...
 
 ### ⛷️ Mode Matériel de Montagne
-- Gestion d'équipements de protection individuelle (EPI)
-- Suivi détaillé : fabricant, modèle, taille, état opérationnel
-- Gestion des prix d'emprunt
-- Encadrement : nom du superviseur pour les sorties
-- État du matériel : excellent, bon, acceptable, hors service
+- Consultation de la liste des équipement proposés
+- Nombreux champs : désignation, type, modèle, fabricant, numéro d'identification constructeur, numéro d'identification club, taille, état opérationnel, couleur, notes d'utilisation, classification EPI
+- à venir : calcul du prix des emprunts
 
-### 🛒 Fonctionnalités avancées
-- **Panier d'emprunts** : sélection multiple avant validation
-- **Recherche multicritères** avec filtres
-- **Import en batch** pour ajouter rapidement de nombreux articles
+- **CETTE APPLICATION N'EST PAS UN GESTIONNAIRE D'EPI (équipements de protection individuelle)** (pas de gestion des dates de contrôle, de l'état etc.)
+
+
+### 🛒 Fonctionnalités admin
+- **Login sécurisé** avec authentification par adresse mail + mot de passe
+- **Activation/désactivation des modes** bibliothèque ou matériel (l'un, l'autre, ou les deux)
+- **Import par lots** pour ajouter rapidement de nombreux articles
+- **Ajout et modification** d'articles individuels
+
+### Interface
+
 - **Interface responsive** adaptée mobile/desktop
-- **Animations fluides** pour une meilleure UX
 
-### 🔒 Sécurité et performances
-- **Fonctions PostgreSQL sécurisées** : transactions atomiques
-- **Row Level Security (RLS)** configuré
-- **Rate limiting** et protection CSRF
-- **Sanitization** des données d'entrée
-- **Logging de sécurité** intégré
 
-## 🛠️ Technologies utilisées
-
-- **Frontend** : React 18 + TypeScript + Vite
-- **Base de données** : Supabase (PostgreSQL)
-- **UI/UX** : Tailwind CSS + composants personnalisés
-- **Déploiement** : AWS Amplify
-- **Code quality** : ESLint + Prettier
 
 ## 🚀 Installation et configuration
 
+L'installation est manuelle, avec l'aide du guide ci-dessous en cours de rédaction.
+
 ### Prérequis
 
+Vous aurez besoin a minima de :
+
+- **un compte Supabase** (gratuit pour petites applications)
+- **un compte Amazon AWS** (pour le déploiement par Amplify)
+- **un compte GitHub** (pour cloner le repository)
+
+Pour le développement local :
+- **VSCode** (logiciel interface de développement)
 - **Node.js** (v18 ou supérieur)
-- **Compte Supabase** (gratuit pour commencer)
-- **Compte AWS** (pour le déploiement Amplify)
-- **Git** (pour cloner le repository)
 
 ### 1. Clonage et installation
 
@@ -76,6 +81,8 @@ npm install
 ### 2. Configuration Supabase
 
 #### Option A : Installation guidée semi-auto (recommandée)
+
+En cours de rédaction.
 
 Exécutez le script d'installation automatique qui configure tout pour vous :
 
@@ -125,13 +132,14 @@ Ce script va :
    VITE_SUPABASE_ANON_KEY=votre-clé-anonyme
    ```
 
-### 3. Développement local
+### 3. Tester le fonctionnement correct en local
+
 
 ```bash
 # Lancer le serveur de développement
 npm run dev
 
-# L'application sera disponible sur http://localhost:5173
+# L'application sera disponible sur http://localhost:3000
 ```
 
 ### 4. Déploiement sur AWS Amplify
@@ -184,88 +192,39 @@ Une fois l'application déployée et accessible, utilisez la **fonction d'import
 3. **Allez dans l'onglet Admin > Import en batch**
 4. **Importez vos livres et/ou matériel directement depuis l'interface**
 
-Cette méthode est beaucoup plus simple que les commandes SQL complexes et ne nécessite aucune connaissance technique particulière.
 
-## 📖 Guide d'utilisation
+## Origine du projet
 
-### Pour les utilisateurs (emprunteurs)
+Cette application a été conçue dans l'objectif de faciliter la vie des clubs alpins proposant à leurs membres des services de bibliothèque et d'emprunt de matériel de montagne. Les constats fondateurs du projet :
+- les adhérents ont souvent du mal à utiliser un fichier d'emprunts fait sous un tableur comme Excel ou Libre Office.
+- il n'y a pas forcément toujours un bénévole gérant la bibliothèque ou l'emprunt de matériel présent au moment de l'emprunt.
+- les utilisateurs veulent une flexibilité maximale pour les emprunts et un désagrément minimal concernant les lourdeurs habituelles des applis (création de compte, connexion sécurisée...)
+- pas de solution "sur étagère" mise à disposition par la FFCAM pour les clubs, pour un sujet qui pourtant se pose dans chacun de ceux-ci.
+- le besoin pour les gestionnaires d'inventaire d'avoir une vue globale sur les articles sortis.
 
-1. **Naviguer dans le catalogue** :
-   - Choisir le mode (Bibliothèque/Matériel)
-   - Utiliser les filtres de recherche
-   - Consulter les détails des articles
+## 🔧 Sous le capot
 
-2. **Emprunter** :
-   - Ajouter des articles au panier
-   - Renseigner nom et email (optionnel)
-   - Pour le matériel : prix d'emprunt et encadrant si nécessaire
-   - Confirmer l'emprunt
+### 🛠️ Technologies utilisées
 
-3. **Retour** :
-   - Cliquer sur "Retourner" sur l'article emprunté
-   - L'article redevient disponible automatiquement
+- **Frontend** : React 18 + TypeScript + Vite
+- **Base de données** : Supabase (PostgreSQL)
+- **UI/UX** : Tailwind CSS + composants personnalisés
+- **Déploiement** : AWS Amplify
+- **Code quality** : ESLint + Prettier
 
-### Pour les administrateurs
+### 🛡️ Sécurité
 
-1. **Accès admin** :
-   - Se connecter avec les credentials Supabase
-   - Accès complet en lecture/écriture
-
-2. **Gestion du catalogue** :
-   - Ajouter/modifier/supprimer des articles
-   - Import en batch pour les grandes quantités
-   - Modifier la disponibilité
-
-3. **Supervision** :
-   - Voir tous les emprunts actifs
-   - Historique des mouvements
-   - Gestion des retours
-
-## 🔧 Structure de la base de données
-
-### Tables principales
-
-#### Pour la bibliothèque (`books`, `book_borrows`)
-- **books** : titre, auteur, catégorie, éditeur, année, ISBN, etc.
-- **book_borrows** : emprunts avec nom, email, dates
-
-#### Pour le matériel (`equipment`, `equipment_borrows`)
-- **equipment** : désignation, EPI, fabricant, modèle, état, etc.
-- **equipment_borrows** : emprunts avec prix, encadrant, etc.
-
-### Sécurité
-- **RLS activé** sur toutes les tables
 - **Fonctions PostgreSQL sécurisées** pour les emprunts
-- **Transactions atomiques** : impossible d'avoir d'incohérences
-
-## 🛡️ Sécurité
-
-- **Pas de données sensibles** stockées
-- **Validation côté serveur** des emprunts
+- **Pas de données sensibles** stockées, seul un nom ou pseudo est à renseigner. Champ email facultatif.
 - **Protection contre les abus** (rate limiting)
-- **Logs de sécurité** pour audit
-- **Headers de sécurité** sur le déploiement
 
-## 🤝 Contribution
-
-Cette application est conçue pour être facilement réutilisable par d'autres clubs. N'hésitez pas à :
-
-1. **Fork le projet** pour votre club
-2. **Adapter les catégories** à vos besoins
-3. **Ajouter des champs** spécifiques à votre activité
-4. **Partager vos améliorations**
 
 ## 📄 Licence
 
-Ce projet est sous licence libre pour encourager son adoption par la communauté des sports de montagne.
+Ce projet est sous licence libre pour encourager son adoption par la communauté.
 
 ## 🆘 Support
 
-En cas de problème ou de question :
-1. Consulter la [documentation Supabase](https://supabase.com/docs)
-2. Vérifier les logs dans l'interface Supabase
-3. Ouvrir une issue sur le repository GitHub
+En cas de problème ou de question, ouvrir une issue sur le repository GitHub.
 
 ---
-
-**Développé avec ❤️ pour la communauté des sports de montagne**
