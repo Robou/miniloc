@@ -11,6 +11,8 @@ Cette application est idéale pour les clubs alpins ou toute autre petite associ
 
 Pour l'instant, il est néanmoins indispensable d'avoir des compétences informatiques en hébergement web et en développement pour la phase d'installation.
 
+▶ [tester une version de démonstration ici](https://dev.d3leq6x46dtj8k.amplifyapp.com/)
+
 
 ## ✨ Fonctionnalités principales actuelles
 
