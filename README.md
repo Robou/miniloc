@@ -2,6 +2,8 @@
 
 Application basique de gestion d'emprunts pour clubs alpins. Conçue pour gérer à la fois une bibliothèque de livres/topos et du matériel de montagne (EPI, équipement technique, etc.), ou seulement l'un des deux.
 
+<img width="1193" height="924" alt="image" src="https://github.com/user-attachments/assets/0165dae1-7a59-41e6-8f27-be22845c3962" />
+
 
 ## 🎯 À qui s'adresse cette application ?
 
