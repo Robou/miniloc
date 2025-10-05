@@ -1,3 +1,4 @@
+import React from 'react';
 import { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useState } from 'react';
 import supabase from './lib/supabase';
@@ -22,8 +23,10 @@ import Footer from './components/ui/Footer';
 import ModeSelector from './components/ui/ModeSelector';
 
 import { Toaster } from 'react-hot-toast';
+import { TokenProvider, useToken } from './contexts/TokenContext';
 
-export default function App() {
+const AppContent: React.FC = () => {
+  const { isTokenValid } = useToken();
   const newLocal = useState<AppMode>('articles');
   const [currentMode, setCurrentMode] = newLocal;
   const [articles, setArticles] = useState<Article[]>([]);
@@ -122,142 +125,151 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto max-w-6xl px-4 pb-12">
-        {/* Header */}
-        <Header currentMode={currentMode} />
+    <TokenProvider>
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto max-w-6xl px-4 pb-12">
+          {/* Header */}
+          <Header currentMode={currentMode} />
 
-        {/* Mode Selector - seulement si plusieurs modes sont activés */}
-        {enabledModes.length > 1 && (
-          <ModeSelector
-            currentMode={currentMode}
-            cart={cart}
-            setCurrentMode={setCurrentMode}
-            showModeLockedToast={showModeLockedToast}
-            setShowModeLockedToast={setShowModeLockedToast}
-            enabledModes={enabledModes}
+          {/* Mode Selector - seulement si plusieurs modes sont activés */}
+          {enabledModes.length > 1 && (
+            <ModeSelector
+              currentMode={currentMode}
+              cart={cart}
+              setCurrentMode={setCurrentMode}
+              showModeLockedToast={showModeLockedToast}
+              setShowModeLockedToast={setShowModeLockedToast}
+              enabledModes={enabledModes}
+            />
+          )}
+
+          {/* Navigation Tabs */}
+          <NavTabs
+            tabs={[
+              {
+                id: 'catalogue',
+                label: 'Catalogue',
+                icon: 'fas fa-list',
+                isActive: step === 'catalogue',
+                onClick: () => setStep('catalogue'),
+              },
+              {
+                id: 'cart',
+                label: 'Panier',
+                icon: 'fas fa-shopping-cart',
+                isActive: step === 'cart',
+                onClick: () => setStep('cart'),
+                badge: cart.length.toString(),
+              },
+              {
+                id: 'borrows',
+                label: 'Emprunts',
+                icon: 'fas fa-hand-holding',
+                isActive: step === 'borrows',
+                onClick: () => setStep('borrows'),
+              },
+              {
+                id: 'login',
+                label: 'Admin',
+                icon: 'fas fa-lock',
+                isActive: step === 'login',
+                onClick: () => setStep('login'),
+              },
+            ]}
           />
-        )}
 
-        {/* Navigation Tabs */}
+          {/* Catalogue Tab */}
+          {step === 'catalogue' && (
+            <Catalog
+              items={currentItems}
+              search={search}
+              onSearchChange={setSearch}
+              cart={cart}
+              onAddToCart={addToCartHandler}
+              currentMode={currentMode}
+            />
+          )}
 
-        <NavTabs
-          tabs={[
-            {
-              id: 'catalogue',
-              label: 'Catalogue',
-              icon: 'fas fa-list',
-              isActive: step === 'catalogue',
-              onClick: () => setStep('catalogue'),
-            },
-            {
-              id: 'cart',
-              label: 'Panier',
-              icon: 'fas fa-shopping-cart',
-              isActive: step === 'cart',
-              onClick: () => setStep('cart'),
-              badge: cart.length.toString(),
-            },
-            {
-              id: 'borrows',
-              label: 'Emprunts',
-              icon: 'fas fa-hand-holding',
-              isActive: step === 'borrows',
-              onClick: () => setStep('borrows'),
-            },
-            {
-              id: 'login',
-              label: 'Admin',
-              icon: 'fas fa-lock',
-              isActive: step === 'login',
-              onClick: () => setStep('login'),
-            },
-          ]}
-        />
+          {/* Cart Tab */}
+          {step === 'cart' && isTokenValid && (
+            <CartTab
+              cart={cart}
+              onRemoveFromCart={removeFromCartHandler}
+              onClearCart={clearCartHandler}
+              onProceedToBorrow={() => setStep('borrow')}
+              onGoToCatalogue={() => setStep('catalogue')}
+              currentMode={currentMode}
+            />
+          )}
 
-        {/* Catalogue Tab */}
-        {step === 'catalogue' && (
-          <Catalog
-            items={currentItems}
-            search={search}
-            onSearchChange={setSearch}
-            cart={cart}
-            onAddToCart={addToCartHandler}
-            currentMode={currentMode}
-          />
-        )}
+          {/* Borrows Tab */}
+          {step === 'borrows' && (
+            <BorrowsTab
+              borrows={borrows}
+              onReturnItem={returnItemHandler}
+              currentMode={currentMode}
+            />
+          )}
 
-        {/* Cart Tab */}
-        {step === 'cart' && (
-          <CartTab
-            cart={cart}
-            onRemoveFromCart={removeFromCartHandler}
-            onClearCart={clearCartHandler}
-            onProceedToBorrow={() => setStep('borrow')}
-            onGoToCatalogue={() => setStep('catalogue')}
-            currentMode={currentMode}
-          />
-        )}
+          {/* Login Tab */}
+          {step === 'login' && (
+            <LoginTab
+              email={adminEmail}
+              password={adminPassword}
+              onEmailChange={setAdminEmail}
+              onPasswordChange={setAdminPassword}
+              onLogin={handleLoginHandler}
+            />
+          )}
 
-        {/* Borrows Tab */}
-        {step === 'borrows' && (
-          <BorrowsTab
-            borrows={borrows}
-            onReturnItem={returnItemHandler}
-            currentMode={currentMode}
-          />
-        )}
+          {/* Borrow Form Tab - displayed when borrow step is active */}
+          {step === 'borrow' && isTokenValid && (
+            <BorrowFormTab
+              cart={cart}
+              borrower={borrower}
+              onBorrowerChange={(field, value) => setBorrower({ ...borrower, [field]: value })}
+              onConfirmBorrow={confirmBorrowHandler}
+              onBackToCart={() => setStep('cart')}
+              currentMode={currentMode}
+            />
+          )}
 
-        {/* Login Tab */}
-        {step === 'login' && (
-          <LoginTab
-            email={adminEmail}
-            password={adminPassword}
-            onEmailChange={setAdminEmail}
-            onPasswordChange={setAdminPassword}
-            onLogin={handleLoginHandler}
-          />
-        )}
+          {/* Admin Tab - displayed when admin step is active */}
+          {step === 'admin' && session && (
+            <AdminTab
+              items={currentItems}
+              onAddItem={addItemHandler}
+              onEditItem={editItemHandler}
+              currentMode={currentMode}
+              currentConfigName={currentConfig.name}
+              enabledModes={enabledModes}
+              onEnabledModesChange={setEnabledModes}
+              search={''}
+              onSearchChange={function (): void {
+                throw new Error('Function not implemented.');
+              }}
+              cart={[]}
+              onAddToCart={function (): void {
+                throw new Error('Function not implemented.');
+              }}
+            />
+          )}
+        </div>
 
-        {/* Borrow Form Tab - displayed when borrow step is active */}
-        {step === 'borrow' && (
-          <BorrowFormTab
-            cart={cart}
-            borrower={borrower}
-            onBorrowerChange={(field, value) => setBorrower({ ...borrower, [field]: value })}
-            onConfirmBorrow={confirmBorrowHandler}
-            onBackToCart={() => setStep('cart')}
-            currentMode={currentMode}
-          />
-        )}
+        {/* Footer */}
+        <Footer />
 
-        {/* Admin Tab - displayed when admin step is active */}
-        {step === 'admin' && session && (
-          <AdminTab
-            items={currentItems}
-            onAddItem={addItemHandler}
-            onEditItem={editItemHandler}
-            currentMode={currentMode}
-            currentConfigName={currentConfig.name}
-            enabledModes={enabledModes}
-            onEnabledModesChange={setEnabledModes}
-            search={''}
-            onSearchChange={function (): void {
-              throw new Error('Function not implemented.');
-            }}
-            cart={[]}
-            onAddToCart={function (): void {
-              throw new Error('Function not implemented.');
-            }}
-          />
-        )}
+        {/* Ne pas supprimer */}
+        <Toaster />
       </div>
+    </TokenProvider>
+  );
+};
 
-      {/* Footer */}
-      <Footer />
-
-      {/* Ne pas supprimer */}
-      <Toaster />
-    </div>
+export default function App() {
+  return (
+    <TokenProvider>
+      <AppContent />
+    </TokenProvider>
   );
 }

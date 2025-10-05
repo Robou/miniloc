@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArticleBorrow, BookBorrow } from '../types/AppMode';
 import { Button } from './ui/Button';
+import { useToken } from '../contexts/TokenContext';
 
 interface BorrowsTabProps {
   borrows: (ArticleBorrow | BookBorrow)[];
@@ -9,6 +10,8 @@ interface BorrowsTabProps {
 }
 
 const BorrowsTab: React.FC<BorrowsTabProps> = ({ borrows, onReturnItem, currentMode }) => {
+  const { isTokenValid } = useToken();
+
   return (
     <div className="fade-in">
       <div className="card">
@@ -60,10 +63,12 @@ const BorrowsTab: React.FC<BorrowsTabProps> = ({ borrows, onReturnItem, currentM
                           </p>
                         </div>
                       </div>
-                      <Button onClick={() => onReturnItem(borrow.id)} className="btn-success">
-                        <i className="fas fa-undo mr-2"></i>
-                        Retourner
-                      </Button>
+                      {isTokenValid && (
+                        <Button onClick={() => onReturnItem(borrow.id)} className="btn-success">
+                          <i className="fas fa-undo mr-2"></i>
+                          Retourner
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>

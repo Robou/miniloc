@@ -46,6 +46,19 @@ CREATE TABLE public.borrows (
   CONSTRAINT borrows_pkey PRIMARY KEY (id),
   CONSTRAINT borrows_article_id_fkey FOREIGN KEY (article_id) REFERENCES public.articles(id)
 );
+-- Table pour stocker les infos de confg, dont le token secret
+create table public.config (
+  key text not null,
+  value text not null,
+  created_at timestamp without time zone null default now(),
+  constraint config_pkey primary key (key)
+) TABLESPACE pg_default;
+
+insert into config (key, value)
+values ('club_token', gen_random_uuid());
+
+-- Active Row Level Security
+ALTER TABLE config ENABLE ROW LEVEL SECURITY;
 
 ### Configuration RLS Actuelle
 - **Table articles** : ALL pour admins uniquement + SELECT pour public
