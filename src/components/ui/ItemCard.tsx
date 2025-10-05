@@ -9,6 +9,7 @@ interface ItemCardProps {
   currentMode: 'articles' | 'books';
   onSelect?: (item: Article | Book) => void;
   isSelected?: boolean;
+  isTokenValid?: boolean;
 }
 
 const ItemCard: React.FunctionComponent<ItemCardProps> = ({
@@ -18,6 +19,7 @@ const ItemCard: React.FunctionComponent<ItemCardProps> = ({
   currentMode,
   onSelect,
   isSelected = false,
+  isTokenValid = true,
 }) => {
   const itemType = currentMode === 'articles' ? (item as Article).type : (item as Book).category;
   const typeClass = `type-${itemType?.toLowerCase().replace(/\s+/g, '-') || 'default'}`;
@@ -63,18 +65,22 @@ const ItemCard: React.FunctionComponent<ItemCardProps> = ({
           </span>
         </div>
 
-        <Button
-          onClick={() => onAddToCart(item)}
-          disabled={!item.available || isInCart}
-          className={`w-full ${
-            !item.available ? 'btn-unavailable' : isInCart ? 'btn-added' : 'btn-primary'
-          }`}
-        >
-          <i
-            className={`fas ${!item.available ? 'fa-ban' : isInCart ? 'fa-check' : 'fa-plus'} mr-2`}
-          ></i>
-          {!item.available ? 'Indisponible' : isInCart ? 'Ajouté au panier' : 'Ajouter au panier'}
-        </Button>
+        {isTokenValid && (
+          <Button
+            onClick={() => onAddToCart(item)}
+            disabled={!item.available || isInCart}
+            className={`w-full ${
+              !item.available ? 'btn-unavailable' : isInCart ? 'btn-added' : 'btn-primary'
+            }`}
+          >
+            <i
+              className={`fas ${
+                !item.available ? 'fa-ban' : isInCart ? 'fa-check' : 'fa-plus'
+              } mr-2`}
+            ></i>
+            {!item.available ? 'Indisponible' : isInCart ? 'Ajouté au panier' : 'Ajouter au panier'}
+          </Button>
+        )}
       </div>
     </div>
   );

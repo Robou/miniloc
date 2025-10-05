@@ -9,6 +9,7 @@ import {
 import ItemCard from './ui/ItemCard.tsx';
 import ItemDetails from './ui/ItemDetails.tsx';
 import SearchBar from './ui/SearchBar.tsx';
+import { useToken } from '../contexts/TokenContext';
 
 interface CatalogProps {
   items: (Article | Book)[];
@@ -27,6 +28,7 @@ const Catalog: React.FC<CatalogProps> = ({
   onAddToCart,
   currentMode,
 }) => {
+  const { isTokenValid } = useToken();
   const [advancedCriteria, setAdvancedCriteria] = useState<SearchCriteria>({});
   const [selectedItem, setSelectedItem] = useState<Article | Book | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -237,6 +239,7 @@ const Catalog: React.FC<CatalogProps> = ({
                       currentMode={currentMode}
                       onSelect={handleItemSelect}
                       isSelected={isSelected}
+                      isTokenValid={isTokenValid}
                     />
                   );
                 })}
@@ -252,6 +255,7 @@ const Catalog: React.FC<CatalogProps> = ({
                     currentMode={currentMode}
                     onAddToCart={onAddToCart}
                     isInCart={!!cart.find((a) => a.id === selectedItem.id)}
+                    isTokenValid={isTokenValid}
                   />
                 </div>
               </div>
@@ -292,6 +296,7 @@ const Catalog: React.FC<CatalogProps> = ({
                 currentMode={currentMode}
                 onAddToCart={onAddToCart}
                 isInCart={!!cart.find((a) => a.id === selectedItem.id)}
+                isTokenValid={isTokenValid}
               />
             )}
             <div className="flex items-center justify-center">

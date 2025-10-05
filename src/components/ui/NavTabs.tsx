@@ -1,4 +1,5 @@
 import React from 'react';
+import { useToken } from '../../contexts/TokenContext';
 
 interface NavTab {
   id: string;
@@ -14,9 +15,24 @@ interface NavTabsProps {
 }
 
 const NavTabs: React.FC<NavTabsProps> = ({ tabs }) => {
+  const { isTokenValid } = useToken();
+
+  // Filtrer les onglets en fonction du token
+  const filteredTabs = tabs.filter((tab) => {
+    // Toujours afficher Catalogue, Emprunts et Admin
+    if (tab.id === 'catalogue' || tab.id === 'borrows' || tab.id === 'login') {
+      return true;
+    }
+    // Masquer seulement Panier si token invalide
+    if (tab.id === 'cart') {
+      return isTokenValid;
+    }
+    return true;
+  });
+
   return (
     <div className="nav-tabs mb-6 flex flex-wrap">
-      {tabs.map((tab) => (
+      {filteredTabs.map((tab) => (
         <button
           key={tab.id}
           className={`nav-tab ${tab.isActive ? 'active' : ''} ${tab.label === 'Admin' ? 'ml-auto' : ''}`}

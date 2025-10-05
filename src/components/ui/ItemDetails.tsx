@@ -7,6 +7,7 @@ interface ItemDetailsProps {
   currentMode: 'articles' | 'books';
   onAddToCart: (item: Article | Book) => void;
   isInCart: boolean;
+  isTokenValid?: boolean;
 }
 
 const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
@@ -14,6 +15,7 @@ const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
   currentMode,
   onAddToCart,
   isInCart,
+  isTokenValid = true,
 }) => {
   const displayName =
     currentMode === 'articles' ? (item as Article).designation || 'Article' : (item as Book).title;
@@ -92,18 +94,22 @@ const ItemDetails: React.FunctionComponent<ItemDetailsProps> = ({
       </div>
       <div>
         {/* <h3 className="mb-3 text-lg font-semibold">Actions</h3> */}
-        <Button
-          onClick={() => onAddToCart(item)}
-          disabled={!item.available || isInCart}
-          className={`w-full ${
-            !item.available ? 'btn-unavailable' : isInCart ? 'btn-added' : 'btn-primary'
-          }`}
-        >
-          <i
-            className={`fas ${!item.available ? 'fa-ban' : isInCart ? 'fa-check' : 'fa-plus'} mr-2`}
-          ></i>
-          {!item.available ? 'Indisponible' : isInCart ? 'Ajouté au panier' : 'Ajouter au panier'}
-        </Button>
+        {isTokenValid && (
+          <Button
+            onClick={() => onAddToCart(item)}
+            disabled={!item.available || isInCart}
+            className={`w-full ${
+              !item.available ? 'btn-unavailable' : isInCart ? 'btn-added' : 'btn-primary'
+            }`}
+          >
+            <i
+              className={`fas ${
+                !item.available ? 'fa-ban' : isInCart ? 'fa-check' : 'fa-plus'
+              } mr-2`}
+            ></i>
+            {!item.available ? 'Indisponible' : isInCart ? 'Ajouté au panier' : 'Ajouter au panier'}
+          </Button>
+        )}
       </div>
     </Card>
   );
