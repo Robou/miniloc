@@ -44,3 +44,4 @@ database/books_rows_export.csv
 database/books_rows.csv
 .gitignore
 database/equipment_rows.csv
+docs/plan-implementation-token.md
